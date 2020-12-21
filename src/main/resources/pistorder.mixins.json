@@ -8,9 +8,8 @@
   ],
   "client": [
     "BlockStateMixin",
-    "MixinWorldRenderer",
     "PistonHandlerMixin",
-    "WorldRendererAccessor"
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
