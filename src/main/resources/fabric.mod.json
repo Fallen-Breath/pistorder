@@ -4,7 +4,7 @@
   "version": "1.0.0",
 
   "name": "Pistorder",
-  "description": "Show piston block movement order",
+  "description": "A mod that shows the block movement order of a piston",
   "authors": [
     "Fallen_Breath"
   ],
