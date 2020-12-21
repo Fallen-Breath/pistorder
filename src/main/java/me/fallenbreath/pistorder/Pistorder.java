@@ -1,7 +1,9 @@
 package me.fallenbreath.pistorder;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PistonBlock;
@@ -28,7 +30,7 @@ import java.util.Objects;
 public class Pistorder
 {
 	private static final Pistorder INSTANCE = new Pistorder();
-	private static final int MAX_PUSH_LIMIT_FOR_TEST = 128;
+	private static final int MAX_PUSH_LIMIT_FOR_CALC = 128;
 	private static final float FONT_SIZE = 0.025F;
 
 	private ClickInfo info = null;
@@ -46,11 +48,17 @@ public class Pistorder
 		// click with empty main hand, not sneaking
 		if (hand == Hand.MAIN_HAND && player.getMainHandStack().isEmpty() && !player.isSneaking())
 		{
-			BlockState blockState = world.getBlockState(hit.getBlockPos());
-			if (blockState.getBlock() instanceof PistonBlock)
+			BlockPos pos = hit.getBlockPos();
+			BlockState blockState = world.getBlockState(pos);
+			Block block = blockState.getBlock();
+			if (block instanceof PistonBlock)
 			{
-				this.click(world, hit.getBlockPos(), blockState.get(Properties.FACING), blockState.get(PistonBlock.EXTENDED) ? ActionType.RETRACT : ActionType.PUSH);
-				return ActionResult.SUCCESS;
+				boolean extended = blockState.get(PistonBlock.EXTENDED);
+				if (!extended || ((PistonBlockAccessor)block).getIsSticky())
+				{
+					this.click(world, pos, blockState.get(Properties.FACING), extended ? ActionType.RETRACT : ActionType.PUSH);
+					return ActionResult.SUCCESS;
+				}
 			}
 		}
 		return ActionResult.FAIL;
@@ -86,7 +94,7 @@ public class Pistorder
 
 			if (!this.moveSuccess)
 			{
-				PushLimitManager.getInstance().overwritePushLimit(MAX_PUSH_LIMIT_FOR_TEST);
+				PushLimitManager.getInstance().overwritePushLimit(MAX_PUSH_LIMIT_FOR_CALC);
 				pistonHandler.calculatePush();
 			}
 
@@ -131,12 +139,11 @@ public class Pistorder
 			GlStateManager.disableDepthTest();  // visibleThroughObjects
 			GlStateManager.depthMask(true);
 			GlStateManager.scalef(-1.0F, 1.0F, 1.0F);
-			client.textRenderer.drawWithShadow(
-					text,
-					-client.textRenderer.getStringWidth(text) * 0.5F,
-					client.textRenderer.getStringBoundedHeight(text, Integer.MAX_VALUE) * (-0.5F + 1.25F * line),
-					color
-			);
+
+			float renderX = -client.textRenderer.getStringWidth(text) * 0.5F;
+			float renderY = client.textRenderer.getStringBoundedHeight(text, Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
+			client.textRenderer.draw(text, renderX, renderY, color);
+
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableDepthTest();
 			GlStateManager.popMatrix();
@@ -159,7 +166,7 @@ public class Pistorder
 			}
 			for (int i = 0; i < this.brokenBlocks.size(); i++)
 			{
-				drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), Formatting.RED.getColorValue(), 0);
+				drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), Formatting.RED.getColorValue() | (0xFF << 24), 0);
 			}
 		}
 	}
