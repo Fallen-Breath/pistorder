@@ -1,6 +1,6 @@
 package me.fallenbreath.pistorder;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -8,14 +8,10 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -48,7 +44,7 @@ public class Pistorder
 	public ActionResult onPlayerRightClickBlock(World world, PlayerEntity player, Hand hand, BlockHitResult hit)
 	{
 		// click with empty main hand, not sneaking
-		if (hand == Hand.MAIN_HAND && player.getMainHandStack() == ItemStack.EMPTY && !player.isSneaking())
+		if (hand == Hand.MAIN_HAND && player.getMainHandStack().isEmpty() && !player.isSneaking())
 		{
 			BlockState blockState = world.getBlockState(hit.getBlockPos());
 			if (blockState.getBlock() instanceof PistonBlock)
@@ -111,7 +107,7 @@ public class Pistorder
 	}
 
 	/**
-	 * Stolen from {@link DebugRenderer#drawString(String, double, double, double, int, float, boolean, float, boolean)}
+	 * Stolen from {@link DebugRenderer#method_3712(String, double, double, double, int, float, boolean, float, boolean)}
 	 */
 	public static void drawString(String text, BlockPos pos, int color, float line)
 	{
@@ -124,29 +120,26 @@ public class Pistorder
 			double camX = camera.getPos().x;
 			double camY = camera.getPos().y;
 			double camZ = camera.getPos().z;
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)(x - camX), (float)(y - camY), (float)(z - camZ));
-			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
-			RenderSystem.multMatrix(new Matrix4f(camera.getRotation()));
-			RenderSystem.scalef(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
-			RenderSystem.enableTexture();
-			RenderSystem.disableDepthTest();  // visibleThroughObjects
-			RenderSystem.depthMask(true);
-			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
-			RenderSystem.enableAlphaTest();
-			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			client.textRenderer.draw(
+			GlStateManager.pushMatrix();
+			GlStateManager.translatef((float)(x - camX), (float)(y - camY), (float)(z - camZ));
+			GlStateManager.normal3f(0.0F, 1.0F, 0.0F);
+			GlStateManager.scalef(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
+			EntityRenderDispatcher entityRenderDispatcher = client.getEntityRenderManager();
+			GlStateManager.rotatef(-entityRenderDispatcher.cameraYaw, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-entityRenderDispatcher.cameraPitch, 1.0F, 0.0F, 0.0F);
+			GlStateManager.enableTexture();
+			GlStateManager.disableDepthTest();  // visibleThroughObjects
+			GlStateManager.depthMask(true);
+			GlStateManager.scalef(-1.0F, 1.0F, 1.0F);
+			client.textRenderer.drawWithShadow(
 					text,
 					-client.textRenderer.getStringWidth(text) * 0.5F,
 					client.textRenderer.getStringBoundedHeight(text, Integer.MAX_VALUE) * (-0.5F + 1.25F * line),
-					color, false, Rotation3.identity().getMatrix(), immediate, true,
-					(int)(client.options.getTextBackgroundOpacity(0.25F) * 255.0F) << 24,
-					0xF000F0
+					color
 			);
-			immediate.draw();
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.enableDepthTest();
-			RenderSystem.popMatrix();
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.enableDepthTest();
+			GlStateManager.popMatrix();
 		}
 	}
 
