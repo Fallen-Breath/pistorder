@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
-  "id": "template_mod",
+  "id": "pistorder",
   "version": "1.0.0",
 
-  "name": "template_mod",
-  "description": "",
+  "name": "Pistorder",
+  "description": "Show piston block movement order",
   "authors": [
     "Fallen_Breath"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/",
-    "sources": "https://github.com/"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/pistorder",
+    "sources": "https://github.com/Fallen-Breath/pistorder"
   },
 
-  "icon": "assets/template_mod/icon.png",
+  "icon": "assets/pistorder/icon.png",
 
   "environment": "*",
   "entrypoints": {
@@ -21,7 +21,7 @@
     ]
   },
   "mixins": [
-    "template_mod.mixins.json"
+    "pistorder.mixins.json"
   ],
 
   "depends": {

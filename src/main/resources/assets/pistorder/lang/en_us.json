@@ -1,0 +1,5 @@
+{
+  "pistorder.push": "Push",
+  "pistorder.retract": "Retract",
+  "pistorder.block_count": "%d blocks"
+}
