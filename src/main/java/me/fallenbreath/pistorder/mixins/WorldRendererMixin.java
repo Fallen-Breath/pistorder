@@ -14,9 +14,9 @@ public abstract class WorldRendererMixin
 	@Inject(
 			method = "render",
 			at = @At(
-					value = "INVOKE_STRING",
-					args = "ldc=weather",
-					target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V"
+					value = "INVOKE",
+					ordinal = 1,
+					target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/LightmapTextureManager;FDDD)V"
 			)
 	)
 	private void renderPistorder(CallbackInfo ci)

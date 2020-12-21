@@ -8,5 +8,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface PistonBlockAccessor
 {
 	@Accessor
-	boolean getIsSticky();
+	boolean getSticky();
 }
