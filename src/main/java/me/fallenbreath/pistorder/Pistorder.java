@@ -1,7 +1,9 @@
 package me.fallenbreath.pistorder;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PistonBlock;
@@ -49,11 +51,17 @@ public class Pistorder
 		// click with empty main hand, not sneaking
 		if (hand == Hand.MAIN_HAND && player.getMainHandStack().isEmpty() && !player.isSneaking())
 		{
-			BlockState blockState = world.getBlockState(hit.getBlockPos());
-			if (blockState.getBlock() instanceof PistonBlock)
+			BlockPos pos = hit.getBlockPos();
+			BlockState blockState = world.getBlockState(pos);
+			Block block = blockState.getBlock();
+			if (block instanceof PistonBlock)
 			{
-				this.click(world, hit.getBlockPos(), blockState.get(Properties.FACING), blockState.get(PistonBlock.EXTENDED) ? ActionType.RETRACT : ActionType.PUSH);
-				return ActionResult.SUCCESS;
+				boolean extended = blockState.get(PistonBlock.EXTENDED);
+				if (!extended || ((PistonBlockAccessor)block).getIsSticky())
+				{
+					this.click(world, pos, blockState.get(Properties.FACING), extended ? ActionType.RETRACT : ActionType.PUSH);
+					return ActionResult.SUCCESS;
+				}
 			}
 		}
 		return ActionResult.FAIL;

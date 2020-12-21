@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "plugin": "me.fallenbreath.pistorder.PistorderMixinPlugin",
   "mixins": [
+    "PistonBlockAccessor"
   ],
   "client": [
     "BlockStateMixin",
