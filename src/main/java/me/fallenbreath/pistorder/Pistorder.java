@@ -31,7 +31,7 @@ import java.util.Objects;
 public class Pistorder
 {
 	private static final Pistorder INSTANCE = new Pistorder();
-	private static final int MAX_PUSH_LIMIT_FOR_TEST = 128;
+	private static final int MAX_PUSH_LIMIT_FOR_CALC = 128;
 	private static final float FONT_SIZE = 0.025F;
 
 	private ClickInfo info = null;
@@ -89,7 +89,7 @@ public class Pistorder
 
 			if (!this.moveSuccess)
 			{
-				PushLimitManager.getInstance().overwritePushLimit(MAX_PUSH_LIMIT_FOR_TEST);
+				PushLimitManager.getInstance().overwritePushLimit(MAX_PUSH_LIMIT_FOR_CALC);
 				pistonHandler.calculatePush();
 			}
 
@@ -133,16 +133,14 @@ public class Pistorder
 			RenderSystem.depthMask(true);
 			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
 			RenderSystem.enableAlphaTest();
+
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			client.textRenderer.draw(
-					text,
-					-client.textRenderer.getStringWidth(text) * 0.5F,
-					client.textRenderer.getStringBoundedHeight(text, Integer.MAX_VALUE) * (-0.5F + 1.25F * line),
-					color, false, Rotation3.identity().getMatrix(), immediate, true,
-					(int)(client.options.getTextBackgroundOpacity(0.25F) * 255.0F) << 24,
-					0xF000F0
-			);
+			float renderX = -client.textRenderer.getStringWidth(text) * 0.5F;
+			float renderY = client.textRenderer.getStringBoundedHeight(text, Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
+			Matrix4f matrix4f = Rotation3.identity().getMatrix();
+			client.textRenderer.draw(text, renderX, renderY, color, false, matrix4f, immediate, true, 0, 0xF000F0);
 			immediate.draw();
+
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableDepthTest();
 			RenderSystem.popMatrix();
@@ -165,7 +163,7 @@ public class Pistorder
 			}
 			for (int i = 0; i < this.brokenBlocks.size(); i++)
 			{
-				drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), Formatting.RED.getColorValue(), 0);
+				drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), Formatting.RED.getColorValue() | (0xFF << 24), 0);
 			}
 		}
 	}
