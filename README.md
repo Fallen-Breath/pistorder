@@ -13,7 +13,7 @@ Nothing will happen if you are sneaking when clicking
 
 It will show:
 - If the piston action will success. A `√` or a `×` indicates the result
-- The amount of the block that will get moved by the piston (even when it exceeds the piston push limit)
+- The amount of the block that will get moved by the piston (even when it exceeds the piston push limit, maximum 128 blocks)
 - The push order of the blocks to be moved
 - The push order of the blocks to be destroyed
 
