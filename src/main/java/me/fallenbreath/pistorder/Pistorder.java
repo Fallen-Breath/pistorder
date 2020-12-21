@@ -125,7 +125,7 @@ public class Pistorder
 			double camY = camera.getPos().y;
 			double camZ = camera.getPos().z;
 			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)(x - camX), (float)(y - camY) + 0.07F, (float)(z - camZ));
+			RenderSystem.translatef((float)(x - camX), (float)(y - camY), (float)(z - camZ));
 			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
 			RenderSystem.multMatrix(new Matrix4f(camera.getRotation()));
 			RenderSystem.scalef(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
@@ -137,8 +137,8 @@ public class Pistorder
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 			client.textRenderer.draw(
 					text,
-					-client.textRenderer.getStringWidth(text) / 2.0F,
-					1.25F * line * client.textRenderer.getStringBoundedHeight(text, Integer.MAX_VALUE),
+					-client.textRenderer.getStringWidth(text) * 0.5F,
+					client.textRenderer.getStringBoundedHeight(text, Integer.MAX_VALUE) * (-0.5F + 1.25F * line),
 					color, false, Rotation3.identity().getMatrix(), immediate, true,
 					(int)(client.options.getTextBackgroundOpacity(0.25F) * 255.0F) << 24,
 					0xF000F0
@@ -157,8 +157,8 @@ public class Pistorder
 		{
 			String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
 			String actionResult = this.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
-			drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, Formatting.GOLD.getColorValue(), 0);
-			drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, Formatting.GOLD.getColorValue(), 1);
+			drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, Formatting.GOLD.getColorValue(), -0.5F);
+			drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, Formatting.GOLD.getColorValue(), 0.5F);
 
 			for (int i = 0; i < this.movedBlocks.size(); i++)
 			{

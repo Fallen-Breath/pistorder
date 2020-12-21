@@ -24,7 +24,6 @@ public abstract class BlockStateMixin
 			if (result.isAccepted())
 			{
 				cir.setReturnValue(result);
-				cir.cancel();
 			}
 		}
 	}
