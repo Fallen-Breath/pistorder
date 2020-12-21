@@ -15,7 +15,6 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -48,7 +47,7 @@ public class Pistorder
 	public ActionResult onPlayerRightClickBlock(World world, PlayerEntity player, Hand hand, BlockHitResult hit)
 	{
 		// click with empty main hand, not sneaking
-		if (hand == Hand.MAIN_HAND && player.getMainHandStack() == ItemStack.EMPTY && !player.isSneaking())
+		if (hand == Hand.MAIN_HAND && player.getMainHandStack().isEmpty() && !player.isSneaking())
 		{
 			BlockState blockState = world.getBlockState(hit.getBlockPos());
 			if (blockState.getBlock() instanceof PistonBlock)
