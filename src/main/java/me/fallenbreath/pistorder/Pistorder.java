@@ -33,6 +33,7 @@ import java.util.Objects;
 public class Pistorder
 {
 	private static final Pistorder INSTANCE = new Pistorder();
+	private static final double MAX_RENDER_DISTANCE = 256.0D;
 	private static final int MAX_PUSH_LIMIT_FOR_CALC = 128;
 	private static final float FONT_SIZE = 0.025F;
 
@@ -124,10 +125,15 @@ public class Pistorder
 	{
 		MinecraftClient client = MinecraftClient.getInstance();
 		Camera camera = client.gameRenderer.getCamera();
-		if (camera.isReady() && client.getEntityRenderManager().gameOptions != null) {
+		if (camera.isReady() && client.getEntityRenderManager().gameOptions != null && client.player != null)
+		{
 			double x = (double)pos.getX() + 0.5D;
 			double y = (double)pos.getY() + 0.5D;
 			double z = (double)pos.getZ() + 0.5D;
+			if (client.player.squaredDistanceTo(x, y, z) > MAX_RENDER_DISTANCE * MAX_RENDER_DISTANCE)
+			{
+				return;
+			}
 			double camX = camera.getPos().x;
 			double camY = camera.getPos().y;
 			double camZ = camera.getPos().z;
@@ -160,18 +166,22 @@ public class Pistorder
 	{
 		if (this.isEnabled())
 		{
-			String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
-			String actionResult = this.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
-			drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, Formatting.GOLD.getColorValue(), -0.5F);
-			drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, Formatting.GOLD.getColorValue(), 0.5F);
+			MinecraftClient client = MinecraftClient.getInstance();
+			if (this.info.world.equals(client.world))
+			{
+				String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
+				String actionResult = this.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
+				drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, Formatting.GOLD.getColorValue(), -0.5F);
+				drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, Formatting.GOLD.getColorValue(), 0.5F);
 
-			for (int i = 0; i < this.movedBlocks.size(); i++)
-			{
-				drawString(String.valueOf(i + 1), this.movedBlocks.get(i), Formatting.WHITE.getColorValue(), 0);
-			}
-			for (int i = 0; i < this.brokenBlocks.size(); i++)
-			{
-				drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), Formatting.RED.getColorValue() | (0xFF << 24), 0);
+				for (int i = 0; i < this.movedBlocks.size(); i++)
+				{
+					drawString(String.valueOf(i + 1), this.movedBlocks.get(i), Formatting.WHITE.getColorValue(), 0);
+				}
+				for (int i = 0; i < this.brokenBlocks.size(); i++)
+				{
+					drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), Formatting.RED.getColorValue() | (0xFF << 24), 0);
+				}
 			}
 		}
 	}

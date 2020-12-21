@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "pistorder",
-  "version": "1.0.0",
+  "version": "1.0.1",
 
   "name": "Pistorder",
   "description": "A mod that shows the block movement order of a piston",
