@@ -30,7 +30,8 @@ public class PistorderMixinPlugin implements IMixinConfigPlugin
 	@Override
 	public String getRefMapperConfig()
 	{
-		return null;
+		// necessary for rift
+		return "pistorder.mixins.refmap.json";
 	}
 
 	@Override
