@@ -24,6 +24,7 @@ jobs:
 
     - name: Download libs for rift
       run: |
+        mkdir tmp
         cd tmp
         wget http://maruohon.kapsi.fi/minecraft/rift_1.13.2_with_libs.zip
         unzip rift_1.13.2_with_libs.zip
