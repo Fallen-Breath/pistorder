@@ -16,7 +16,7 @@ public class PistorderMixinPlugin implements IMixinConfigPlugin
 		// only loads our pushLimit modifier when carpet mod not loaded
 		if (mixinClassName.endsWith(".PistonHandlerMixin"))
 		{
-			return PushLimitManager.getInstance().showLoadPistorderPushLimitMixin();
+			return PushLimitManager.getInstance().shouldLoadPistorderPushLimitMixin();
 		}
 		return true;
 	}

@@ -18,8 +18,8 @@ public abstract class GameRendererMixin
 					target = "Lnet/minecraft/client/render/GameRenderer;renderHand:Z"
 			)
 	)
-	private void renderPistorder(CallbackInfo ci)
+	private void renderPistorder(float tickDelta, long endTime, CallbackInfo ci)
 	{
-		Pistorder.getInstance().render();
+		Pistorder.getInstance().render(tickDelta);
 	}
 }
