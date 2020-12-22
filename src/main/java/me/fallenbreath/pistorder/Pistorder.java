@@ -24,7 +24,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.WorldChunk;
 
 import java.util.Collections;
 import java.util.List;
@@ -166,33 +168,44 @@ public class Pistorder
 		}
 	}
 
+	private boolean checkState(World world, ClickInfo info)
+	{
+		if (!Objects.equals(world, info.world))
+		{
+			return false;
+		}
+		BlockView chunk = world.getChunkManager().getChunk(info.pos.getX() >> 4, info.pos.getZ() >> 4);
+		if (chunk instanceof WorldChunk && !((WorldChunk)chunk).isEmpty())  // it's a real loaded chunk
+		{
+			return chunk.getBlockState(info.pos).equals(info.blockState);
+		}
+		return true;
+	}
+
 	@SuppressWarnings("ConstantConditions")
 	public void render(float tickDelta)
 	{
 		if (this.isEnabled())
 		{
 			MinecraftClient client = MinecraftClient.getInstance();
-			if (this.info.world.equals(client.world))
+			if (!this.checkState(client.world, this.info))
 			{
-				if (!this.info.blockState.equals(client.world.getBlockState(this.info.pos)))
-				{
-					this.disable();
-					return;
-				}
+				this.disable();
+				return;
+			}
 
-				String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
-				String actionResult = this.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
-				drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), -0.5F);
-				drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), 0.5F);
+			String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
+			String actionResult = this.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
+			drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), -0.5F);
+			drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), 0.5F);
 
-				for (int i = 0; i < this.movedBlocks.size(); i++)
-				{
-					drawString(String.valueOf(i + 1), this.movedBlocks.get(i), tickDelta, Formatting.WHITE.getColorValue(), 0);
-				}
-				for (int i = 0; i < this.brokenBlocks.size(); i++)
-				{
-					drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), tickDelta, Formatting.RED.getColorValue() | (0xFF << 24), 0);
-				}
+			for (int i = 0; i < this.movedBlocks.size(); i++)
+			{
+				drawString(String.valueOf(i + 1), this.movedBlocks.get(i), tickDelta, Formatting.WHITE.getColorValue(), 0);
+			}
+			for (int i = 0; i < this.brokenBlocks.size(); i++)
+			{
+				drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), tickDelta, Formatting.RED.getColorValue() | (0xFF << 24), 0);
 			}
 		}
 	}
