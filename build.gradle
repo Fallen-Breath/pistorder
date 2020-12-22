@@ -43,7 +43,7 @@ dependencies {
 
 mixin {
     defaultObfuscationEnv notch
-    add sourceSets.main, 'mixins.' + '' + '.refmap.json'
+    add sourceSets.main, 'pistorder.mixins.refmap.json'
 }
 
 minecraft {
