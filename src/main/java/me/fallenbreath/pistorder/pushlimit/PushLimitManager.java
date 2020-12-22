@@ -2,9 +2,9 @@ package me.fallenbreath.pistorder.pushlimit;
 
 import com.google.common.collect.Lists;
 import me.fallenbreath.pistorder.pushlimit.handlers.FabricCarpetHandler;
-import me.fallenbreath.pistorder.pushlimit.handlers.PistorderHandler;
 import me.fallenbreath.pistorder.pushlimit.handlers.PushLimitHandler;
 import me.fallenbreath.pistorder.pushlimit.handlers.QuickCarpetHandler;
+import me.fallenbreath.pistorder.pushlimit.handlers.VanillaHandler;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.List;
@@ -20,12 +20,12 @@ public class PushLimitManager
 	{
 		this.oldPushLimit = null;
 
-		// mods that modifies the push limit
+		// mods that modify the push limit
 		this.handlers.add(new QuickCarpetHandler());
 		this.handlers.add(new FabricCarpetHandler());
 
 		// leave the fallback handler to the end
-		this.handlers.add(new PistorderHandler());
+		this.handlers.add(new VanillaHandler());
 	}
 
 	public static PushLimitManager getInstance()
@@ -33,7 +33,7 @@ public class PushLimitManager
 		return INSTANCE;
 	}
 
-	public boolean showLoadPistorderPushLimitMixin()
+	public boolean shouldLoadPistorderPushLimitMixin()
 	{
 		for (PushLimitHandler handler: this.handlers)
 		{
@@ -61,7 +61,7 @@ public class PushLimitManager
 		throw new IllegalStateException("getPushLimit failed");
 	}
 
-	public void setPushLimit(int pushLimit)
+	private void setPushLimit(int pushLimit)
 	{
 		for (PushLimitHandler handler: this.handlers)
 		{

@@ -1,8 +1,8 @@
 package me.fallenbreath.pistorder.pushlimit.handlers;
 
-public class PistorderHandler implements PushLimitHandler
+public class VanillaHandler implements PushLimitHandler
 {
-	private Integer currentPushLimit = 12;
+	private Integer currentPushLimit = 12;  // vanilla value
 
 	@Override
 	public String getModId()

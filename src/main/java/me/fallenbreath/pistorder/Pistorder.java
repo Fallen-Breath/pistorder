@@ -121,7 +121,7 @@ public class Pistorder
 	/**
 	 * Stolen from {@link DebugRenderer#drawString(String, double, double, double, int, float, boolean, float, boolean)}
 	 */
-	public static void drawString(String text, BlockPos pos, int color, float line)
+	public static void drawString(String text, BlockPos pos, float tickDelta, int color, float line)
 	{
 		MinecraftClient client = MinecraftClient.getInstance();
 		Camera camera = client.gameRenderer.getCamera();
@@ -161,7 +161,7 @@ public class Pistorder
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	public void render()
+	public void render(float tickDelta)
 	{
 		if (this.isEnabled())
 		{
@@ -170,16 +170,16 @@ public class Pistorder
 			{
 				String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
 				String actionResult = this.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
-				drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, Formatting.GOLD.getColorValue(), -0.5F);
-				drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, Formatting.GOLD.getColorValue(), 0.5F);
+				drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), -0.5F);
+				drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), 0.5F);
 
 				for (int i = 0; i < this.movedBlocks.size(); i++)
 				{
-					drawString(String.valueOf(i + 1), this.movedBlocks.get(i), Formatting.WHITE.getColorValue(), 0);
+					drawString(String.valueOf(i + 1), this.movedBlocks.get(i), tickDelta, Formatting.WHITE.getColorValue(), 0);
 				}
 				for (int i = 0; i < this.brokenBlocks.size(); i++)
 				{
-					drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), Formatting.RED.getColorValue() | (0xFF << 24), 0);
+					drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), tickDelta, Formatting.RED.getColorValue() | (0xFF << 24), 0);
 				}
 			}
 		}
