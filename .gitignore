@@ -31,3 +31,7 @@ bin/
 # fabric
 
 run/
+
+# rift
+
+rift_libs/

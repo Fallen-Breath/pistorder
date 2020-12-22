@@ -1,7 +1,7 @@
 package me.fallenbreath.pistorder.mixins;
 
 import me.fallenbreath.pistorder.Pistorder;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,14 +12,14 @@ public abstract class GameRendererMixin
 {
 	// just like onRenderWorldLast in malilib
 	@Inject(
-			method = "renderCenter",
+			method = "updateCameraAndRender(FJ)V",
 			at = @At(
 					value = "FIELD",
-					target = "Lnet/minecraft/client/render/GameRenderer;renderHand:Z"
+					target = "Lnet/minecraft/client/renderer/GameRenderer;renderHand:Z"
 			)
 	)
-	private void renderPistorder(CallbackInfo ci)
+	private void renderPistorder(float partialTicks, long nanoTime, CallbackInfo ci)
 	{
-		Pistorder.getInstance().render();
+		Pistorder.getInstance().render(partialTicks);
 	}
 }

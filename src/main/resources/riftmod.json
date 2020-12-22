@@ -1,0 +1,10 @@
+{
+    "id": "pistorder",
+    "name": "Pistorder",
+    "authors": [
+        "Fallen_Breath"
+    ],
+    "listeners": [
+        "me.fallenbreath.pistorder.PistorderMod"
+    ]
+}

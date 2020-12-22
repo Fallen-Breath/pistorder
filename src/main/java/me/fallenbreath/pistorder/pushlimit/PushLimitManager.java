@@ -1,13 +1,13 @@
 package me.fallenbreath.pistorder.pushlimit;
 
 import com.google.common.collect.Lists;
-import me.fallenbreath.pistorder.pushlimit.handlers.FabricCarpetHandler;
 import me.fallenbreath.pistorder.pushlimit.handlers.PistorderHandler;
 import me.fallenbreath.pistorder.pushlimit.handlers.PushLimitHandler;
-import me.fallenbreath.pistorder.pushlimit.handlers.QuickCarpetHandler;
-import net.fabricmc.loader.api.FabricLoader;
+import org.dimdev.riftloader.RiftLoader;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PushLimitManager
 {
@@ -21,8 +21,8 @@ public class PushLimitManager
 		this.oldPushLimit = null;
 
 		// mods that modifies the push limit
-		this.handlers.add(new QuickCarpetHandler());
-		this.handlers.add(new FabricCarpetHandler());
+//		this.handlers.add(new QuickCarpetHandler());
+//		this.handlers.add(new FabricCarpetHandler());
 
 		// leave the fallback handler to the end
 		this.handlers.add(new PistorderHandler());
@@ -35,10 +35,11 @@ public class PushLimitManager
 
 	public boolean showLoadPistorderPushLimitMixin()
 	{
+		Set<String> modIds = RiftLoader.instance.getMods().stream().map(m -> m.name).collect(Collectors.toSet());
 		for (PushLimitHandler handler: this.handlers)
 		{
 			String modId = handler.getModId();
-			if (modId != null && FabricLoader.getInstance().isModLoaded(modId))
+			if (modId != null && modIds.contains(modId))
 			{
 				return false;
 			}

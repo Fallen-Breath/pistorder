@@ -1,7 +1,6 @@
 package me.fallenbreath.pistorder;
 
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
-import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -14,7 +13,7 @@ public class PistorderMixinPlugin implements IMixinConfigPlugin
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName)
 	{
 		// only loads our pushLimit modifier when carpet mod not loaded
-		if (mixinClassName.endsWith(".PistonHandlerMixin"))
+		if (mixinClassName.endsWith(".BlockPistonStructureHelperMixin"))
 		{
 			return PushLimitManager.getInstance().showLoadPistorderPushLimitMixin();
 		}
@@ -46,12 +45,12 @@ public class PistorderMixinPlugin implements IMixinConfigPlugin
 	}
 
 	@Override
-	public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo)
+	public void preApply(String targetClassName, org.spongepowered.asm.lib.tree.ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo)
 	{
 	}
 
 	@Override
-	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo)
+	public void postApply(String targetClassName, org.spongepowered.asm.lib.tree.ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo)
 	{
 	}
 }

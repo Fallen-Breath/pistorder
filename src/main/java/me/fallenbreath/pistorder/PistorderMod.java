@@ -1,16 +1,19 @@
 package me.fallenbreath.pistorder;
 
-import net.fabricmc.api.ClientModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.riftloader.listener.InitializationListener;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.Mixins;
 
-public class PistorderMod implements ClientModInitializer
+public class PistorderMod implements InitializationListener
 {
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
-	public void onInitializeClient()
+	public void onInitialization()
 	{
-		// owo
+		MixinBootstrap.init();
+		Mixins.addConfiguration("pistorder.mixins.json");
 	}
 }

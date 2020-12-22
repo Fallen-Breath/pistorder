@@ -8,9 +8,9 @@
     "PistonBlockAccessor"
   ],
   "client": [
-    "BlockStateMixin",
+    "BlockPistonStructureHelperMixin",
     "GameRendererMixin",
-    "PistonHandlerMixin"
+    "IBlockStateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

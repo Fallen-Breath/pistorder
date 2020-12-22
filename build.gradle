@@ -1,86 +1,54 @@
-plugins {
-	id 'fabric-loom' version '0.5-SNAPSHOT'
-	id 'maven-publish'
+buildscript {
+    repositories {
+        jcenter()
+        maven { url 'http://files.minecraftforge.net/maven' }
+        maven { url 'http://repo.spongepowered.org/maven' }
+//        maven { url 'https://www.jitpack.io' }
+        maven { url "$projectDir/rift_libs" }
+    }
+
+    dependencies {
+        classpath 'com.github.Chocohead:ForgeGradle:jitpack-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+    }
 }
 
-repositories {
-	maven {
-		url 'https://masa.dy.fi/maven'
-	}
-	maven {
-		url 'https://maven.skyrising.xyz'
-	}
-}
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'java'
 
 archivesBaseName = project.archives_base_name
 version = 'mc' + project.minecraft_version + '-' + project.mod_version
 group = project.maven_group
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+//    maven { url 'https://www.dimdev.org/maven/' }
+    maven { url 'https://repo.spongepowered.org/maven/' }
+//    maven { url 'https://www.jitpack.io' }
+    maven { url "$projectDir/rift_libs" }
+    //maven { url "http://repo.strezz.org/artifactory/list/Strezz-Central" }
+}
+
 dependencies {
-	//to change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
-	modCompile "carpet:fabric-carpet:${project.minecraft_version}-${project.fabric_carpet_version}"
-	modCompileOnly "quickcarpet:quickcarpet:${project.quick_carpet_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	modCompile "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
-	include "net.fabricmc.fabric-api:fabric-resource-loader-v0:${project.fabric_resource_loader_version}"
-
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
+    //implementation 'com.github.Chocohead:Rift:f76cf44d887d290782590c99770876393c924333:dev'
+    //implementation 'com.github.Chocohead:Rift:2d8bb9bd5620ac10307c17b2f38c4dfc21e11216:dev'
+    //implementation 'com.github.Chocohead:Rift:c283efe7bdf6436cdd8710b563ff05793aeca20d:dev'
+    //implementation 'com.github.Chocohead:Rift:jitpack-SNAPSHOT:dev'
+    implementation 'com.github.Chocohead:Rift:jitpack-aeee80c1fb-1:dev'
 }
 
-processResources {
-	inputs.property "version", project.version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
+mixin {
+    defaultObfuscationEnv notch
+    add sourceSets.main, 'mixins.' + '' + '.refmap.json'
 }
 
-// ensure that the encoding is set to UTF-8, no matter what the system default is
-// this fixes some edge cases with special characters not displaying correctly
-// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
-}
-
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = "sources"
-	from sourceSets.main.allSource
-}
-
-jar {
-	from "LICENSE"
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-		}
-	}
-
-	// select the repositories you want to publish to
-	repositories {
-		// uncomment to publish to the local maven
-		// mavenLocal()
-	}
+minecraft {
+    version = '1.13.2'
+    mappings = 'snapshot_20181130'
+    runDir = 'run'
+    tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderTweaker'
 }
