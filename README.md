@@ -23,4 +23,4 @@ For mods that modifies the piston push limit, it's currently compatible with [Fa
 
 It's a client side only mod
 
-![screenshot](https://raw.githubusercontent.com/Fallen-Breath/pistorder/1.15.2/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/Fallen-Breath/pistorder/1.15.2-fabric/screenshot.png)
