@@ -20,6 +20,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +55,7 @@ public class Pistorder
 				boolean extended = blockState.get(BlockPistonBase.EXTENDED);
 				if (!extended || ((PistonBlockAccessor)block).getIsSticky())
 				{
-					this.click(world, pos, blockState.get(BlockStateProperties.FACING), extended ? ActionType.RETRACT : ActionType.PUSH);
+					this.click(world, pos, blockState, blockState.get(BlockStateProperties.FACING), extended ? ActionType.RETRACT : ActionType.PUSH);
 					return EnumActionResult.SUCCESS;
 				}
 			}
@@ -67,12 +68,17 @@ public class Pistorder
 		return this.info != null;
 	}
 
-	synchronized private void click(World world, BlockPos pos, EnumFacing pistonFacing, ActionType actionType)
+	private void disable()
 	{
-		ClickInfo newInfo = new ClickInfo(world, pos, pistonFacing, actionType);
+		this.info = null;
+	}
+
+	synchronized private void click(World world, BlockPos pos, IBlockState blockState, EnumFacing pistonFacing, ActionType actionType)
+	{
+		ClickInfo newInfo = new ClickInfo(world, pos, blockState, pistonFacing, actionType);
 		if (newInfo.equals(this.info))
 		{
-			this.info = null;
+			this.disable();
 		}
 		else
 		{
@@ -157,27 +163,44 @@ public class Pistorder
 		}
 	}
 
+	private boolean checkState(World world, ClickInfo info)
+	{
+		if (!Objects.equals(world, info.world))
+		{
+			return false;
+		}
+		Chunk chunk = world.getChunk(info.pos.getX() >> 4, info.pos.getZ() >> 4);
+		if (!chunk.isEmpty())  // it's a real loaded chunk
+		{
+			return chunk.getBlockState(info.pos).equals(info.blockState);
+		}
+		return true;
+	}
+
 	@SuppressWarnings("ConstantConditions")
 	public void render(float tickDelta)
 	{
 		if (this.isEnabled())
 		{
 			Minecraft client = Minecraft.getInstance();
-			if (this.info.world.equals(client.world))
+			if (!this.checkState(client.world, this.info))
 			{
-				String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
-				String actionResult = this.moveSuccess ? TextFormatting.GREEN + "√" : TextFormatting.RED + "×";
-				drawString(String.format("%s %s", I18n.format(actionKey), actionResult), this.info.pos, tickDelta, TextFormatting.GOLD.getColor(), -0.5F);
-				drawString(I18n.format("pistorder.block_count", this.movedBlocks.size()), this.info.pos, tickDelta, TextFormatting.GOLD.getColor(), 0.5F);
+				this.disable();
+				return;
+			}
 
-				for (int i = 0; i < this.movedBlocks.size(); i++)
-				{
-					drawString(String.valueOf(i + 1), this.movedBlocks.get(i), tickDelta, TextFormatting.WHITE.getColor(), 0);
-				}
-				for (int i = 0; i < this.brokenBlocks.size(); i++)
-				{
-					drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), tickDelta, TextFormatting.RED.getColor() | (0xFF << 24), 0);
-				}
+			String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
+			String actionResult = this.moveSuccess ? TextFormatting.GREEN + "√" : TextFormatting.RED + "×";
+			drawString(String.format("%s %s", I18n.format(actionKey), actionResult), this.info.pos, tickDelta, TextFormatting.GOLD.getColor(), -0.5F);
+			drawString(I18n.format("pistorder.block_count", this.movedBlocks.size()), this.info.pos, tickDelta, TextFormatting.GOLD.getColor(), 0.5F);
+
+			for (int i = 0; i < this.movedBlocks.size(); i++)
+			{
+				drawString(String.valueOf(i + 1), this.movedBlocks.get(i), tickDelta, TextFormatting.WHITE.getColor(), 0);
+			}
+			for (int i = 0; i < this.brokenBlocks.size(); i++)
+			{
+				drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), tickDelta, TextFormatting.RED.getColor() | (0xFF << 24), 0);
 			}
 		}
 	}
@@ -186,13 +209,15 @@ public class Pistorder
 	{
 		public final World world;
 		public final BlockPos pos;
+		public final IBlockState blockState;
 		public final EnumFacing direction;
 		public final ActionType actionType;
 
-		public ClickInfo(World world, BlockPos pos, EnumFacing direction, ActionType actionType)
+		public ClickInfo(World world, BlockPos pos, IBlockState blockState, EnumFacing direction, ActionType actionType)
 		{
 			this.world = world;
 			this.pos = pos;
+			this.blockState = blockState;
 			this.direction = direction;
 			this.actionType = actionType;
 		}
