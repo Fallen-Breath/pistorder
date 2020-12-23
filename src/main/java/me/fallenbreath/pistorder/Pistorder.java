@@ -24,7 +24,9 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.WorldChunk;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +62,7 @@ public class Pistorder
 				boolean extended = blockState.get(PistonBlock.EXTENDED);
 				if (!extended || ((PistonBlockAccessor)block).getSticky())
 				{
-					this.click(world, pos, blockState.get(Properties.FACING), extended ? ActionType.RETRACT : ActionType.PUSH);
+					this.click(world, pos, blockState, blockState.get(Properties.FACING), extended ? ActionType.RETRACT : ActionType.PUSH);
 					return ActionResult.SUCCESS;
 				}
 			}
@@ -73,12 +75,17 @@ public class Pistorder
 		return this.info != null;
 	}
 
-	synchronized private void click(World world, BlockPos pos, Direction pistonFacing, ActionType actionType)
+	private void disable()
 	{
-		ClickInfo newInfo = new ClickInfo(world, pos, pistonFacing, actionType);
+		this.info = null;
+	}
+
+	synchronized private void click(World world, BlockPos pos, BlockState blockState, Direction pistonFacing, ActionType actionType)
+	{
+		ClickInfo newInfo = new ClickInfo(world, pos, blockState, pistonFacing, actionType);
 		if (newInfo.equals(this.info))
 		{
-			this.info = null;
+			this.disable();
 		}
 		else
 		{
@@ -160,27 +167,44 @@ public class Pistorder
 		}
 	}
 
+	private boolean checkState(World world, ClickInfo info)
+	{
+		if (!Objects.equals(world, info.world))
+		{
+			return false;
+		}
+		BlockView chunk = world.getChunkManager().getChunk(info.pos.getX() >> 4, info.pos.getZ() >> 4);
+		if (chunk instanceof WorldChunk && !((WorldChunk)chunk).isEmpty())  // it's a real loaded chunk
+		{
+			return chunk.getBlockState(info.pos).equals(info.blockState);
+		}
+		return true;
+	}
+
 	@SuppressWarnings("ConstantConditions")
 	public void render(float tickDelta)
 	{
 		if (this.isEnabled())
 		{
 			MinecraftClient client = MinecraftClient.getInstance();
-			if (this.info.world.equals(client.world))
+			if (!this.checkState(client.world, this.info))
 			{
-				String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
-				String actionResult = this.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
-				drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), -0.5F);
-				drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), 0.5F);
+				this.disable();
+				return;
+			}
 
-				for (int i = 0; i < this.movedBlocks.size(); i++)
-				{
-					drawString(String.valueOf(i + 1), this.movedBlocks.get(i), tickDelta, Formatting.WHITE.getColorValue(), 0);
-				}
-				for (int i = 0; i < this.brokenBlocks.size(); i++)
-				{
-					drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), tickDelta, Formatting.RED.getColorValue() | (0xFF << 24), 0);
-				}
+			String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
+			String actionResult = this.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
+			drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), -0.5F);
+			drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), 0.5F);
+
+			for (int i = 0; i < this.movedBlocks.size(); i++)
+			{
+				drawString(String.valueOf(i + 1), this.movedBlocks.get(i), tickDelta, Formatting.WHITE.getColorValue(), 0);
+			}
+			for (int i = 0; i < this.brokenBlocks.size(); i++)
+			{
+				drawString(String.valueOf(i + 1), this.brokenBlocks.get(i), tickDelta, Formatting.RED.getColorValue() | (0xFF << 24), 0);
 			}
 		}
 	}
@@ -189,13 +213,15 @@ public class Pistorder
 	{
 		public final World world;
 		public final BlockPos pos;
+		public final BlockState blockState;
 		public final Direction direction;
 		public final ActionType actionType;
 
-		public ClickInfo(World world, BlockPos pos, Direction direction, ActionType actionType)
+		public ClickInfo(World world, BlockPos pos, BlockState blockState, Direction direction, ActionType actionType)
 		{
 			this.world = world;
 			this.pos = pos;
+			this.blockState = blockState;
 			this.direction = direction;
 			this.actionType = actionType;
 		}
