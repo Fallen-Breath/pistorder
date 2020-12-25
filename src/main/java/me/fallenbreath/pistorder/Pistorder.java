@@ -35,9 +35,13 @@ import java.util.Objects;
 public class Pistorder
 {
 	private static final Pistorder INSTANCE = new Pistorder();
+
 	private static final double MAX_RENDER_DISTANCE = 256.0D;
 	private static final int MAX_PUSH_LIMIT_FOR_CALC = 128;
 	private static final float FONT_SIZE = 0.025F;
+
+	private static final String INDICATOR_SUCCESS = Formatting.GREEN + "✔";
+	private static final String INDICATOR_FAIL = Formatting.RED + "×";
 
 	private ClickInfo info = null;
 	private List<BlockPos> movedBlocks;
@@ -195,7 +199,7 @@ public class Pistorder
 			}
 
 			String actionKey = this.info.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
-			String actionResult = this.moveSuccess ? Formatting.GREEN + "√" : Formatting.RED + "×";
+			String actionResult = this.moveSuccess ? INDICATOR_SUCCESS : INDICATOR_FAIL;
 			drawString(String.format("%s %s", I18n.translate(actionKey), actionResult), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), -0.5F);
 			drawString(I18n.translate("pistorder.block_count", this.movedBlocks.size()), this.info.pos, tickDelta, Formatting.GOLD.getColorValue(), 0.5F);
 
