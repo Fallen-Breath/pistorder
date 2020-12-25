@@ -128,7 +128,7 @@ public class Pistorder
 	/**
 	 * Stolen from {@link DebugRenderer#drawString(String, double, double, double, int, float, boolean, float, boolean)}
 	 */
-	public static void drawString(String text, BlockPos pos, float tickDelta, int color, float line)
+	private static void drawString(String text, BlockPos pos, float tickDelta, int color, float line)
 	{
 		MinecraftClient client = MinecraftClient.getInstance();
 		Camera camera = client.gameRenderer.getCamera();
@@ -210,7 +210,7 @@ public class Pistorder
 		}
 	}
 
-	public static class ClickInfo
+	private static class ClickInfo
 	{
 		public final World world;
 		public final BlockPos pos;
@@ -246,7 +246,7 @@ public class Pistorder
 		}
 	}
 
-	public enum ActionType
+	private enum ActionType
 	{
 		PUSH,
 		RETRACT;
