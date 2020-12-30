@@ -60,9 +60,11 @@ public class Pistorder
 			if (block instanceof PistonBlock)
 			{
 				boolean extended = blockState.get(PistonBlock.EXTENDED);
-				if (!extended || ((PistonBlockAccessor)block).getSticky())
+				boolean sticky = ((PistonBlockAccessor)block).getSticky();
+				if (!extended || sticky)
 				{
-					this.click(world, pos, blockState, blockState.get(Properties.FACING), extended ? ActionType.RETRACT : ActionType.PUSH);
+					boolean isFacingAir = world.getBlockState(posIn.offset(dir)).isAir();
+					this.click(world, pos, blockState, blockState.get(Properties.FACING), (extended || (sticky && isFacingAir)) ? ActionType.RETRACT : ActionType.PUSH);
 					return ActionResult.SUCCESS;
 				}
 			}
