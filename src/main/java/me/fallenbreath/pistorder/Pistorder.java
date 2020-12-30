@@ -63,8 +63,9 @@ public class Pistorder
 				boolean sticky = ((PistonBlockAccessor)block).getSticky();
 				if (!extended || sticky)
 				{
-					boolean isFacingAir = world.getBlockState(posIn.offset(dir)).isAir();
-					this.click(world, pos, blockState, blockState.get(Properties.FACING), (extended || (sticky && isFacingAir)) ? ActionType.RETRACT : ActionType.PUSH);
+					Direction dir = blockState.get(Properties.FACING);
+					boolean isFacingAir = world.getBlockState(pos.offset(dir)).isAir();
+					this.click(world, pos, blockState, dir, (extended || (sticky && isFacingAir)) ? ActionType.RETRACT : ActionType.PUSH);
 					return ActionResult.SUCCESS;
 				}
 			}
