@@ -60,7 +60,7 @@ public class Pistorder
 			if (block instanceof PistonBlock)
 			{
 				boolean extended = blockState.get(PistonBlock.EXTENDED);
-				boolean sticky = ((PistonBlockAccessor)block).getSticky();
+				boolean sticky = ((PistonBlockAccessor)block).getIsSticky();
 				if (!extended || sticky)
 				{
 					Direction dir = blockState.get(Properties.FACING);
