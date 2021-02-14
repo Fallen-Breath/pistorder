@@ -2,9 +2,9 @@ buildscript {
     repositories {
         jcenter()
         maven { url 'http://files.minecraftforge.net/maven' }
+        maven { url "$projectDir/rift_libs" }
         maven { url 'http://repo.spongepowered.org/maven' }
 //        maven { url 'https://www.jitpack.io' }
-        maven { url "$projectDir/rift_libs" }
     }
 
     dependencies {
