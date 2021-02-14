@@ -7,7 +7,7 @@
 
 A mod that shows the block movement order of a piston. Thanks [CarpetClient](https://github.com/X-com/CarpetClient) for the idea of such a cool tool
 
-Right click a piston base block with an empty hand to show what will happen when a piston pushes / retracts, click again to hide the information
+Right click a piston base block with an empty hand to show what will happen when a piston pushes / retracts
 
 Nothing will happen if you are sneaking when clicking
 
@@ -19,8 +19,12 @@ It will show:
 
 Information will still be displayed if the piston fails to push / retract, but if it fails due to an in-movable block the result might be incorrect
 
+Click the piston again to hide the information display. Information displays will also be removed after a dimension change 
+
+If there is an air gap between the piston and a block, clicking again will switch into indirect mode. It will assume the piston is interacting with the block and show the related push / retract information
+
 For mods that modifies the piston push limit, it's currently compatible with [Fabric Carpet](https://github.com/gnembon/fabric-carpet) and [Quick Carpet](https://github.com/DeadlyMC/QuickCarpet114)
 
-It's a client side only mod
+It's a client side only mod, no need to be installed on the server side
 
 ![screenshot](https://raw.githubusercontent.com/Fallen-Breath/pistorder/1.15.2-fabric/screenshot.png)
