@@ -24,7 +24,7 @@ jobs:
 
     - name: Download libs for rift
       run: |
-        wget https://files.catbox.moe/okoxws.zip -O ./rift_libs.zip
+        wget https://files.catbox.moe/okoxws.zip -O rift_libs.zip
         unzip rift_libs.zip
 
     - name: Cache gradle files
@@ -43,6 +43,7 @@ jobs:
     - name: Build with Gradle
       run: |
         ./gradlew setupDecompWorkspace
+        ./gradlew clean
         ./gradlew build
     - uses: actions/upload-artifact@v2
       with:
