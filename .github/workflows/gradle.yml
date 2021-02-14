@@ -24,12 +24,8 @@ jobs:
 
     - name: Download libs for rift
       run: |
-        mkdir tmp
-        cd tmp
-        wget http://maruohon.kapsi.fi/minecraft/rift_1.13.2_with_libs.zip
-        unzip rift_1.13.2_with_libs.zip
-        mv ./rift_libs ../
-        cd ..
+        wget https://files.catbox.moe/okoxws.zip -O ./rift_libs.zip
+        unzip rift_libs.zip
 
     - name: Cache gradle files
       uses: actions/cache@v2
