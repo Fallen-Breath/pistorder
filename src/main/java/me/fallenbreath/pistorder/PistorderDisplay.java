@@ -12,9 +12,9 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix4f;
@@ -217,7 +217,7 @@ public class PistorderDisplay
 			{
 				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 				float renderX = -totalWidth * 0.5F + writtenWidth;
-				float renderY = client.textRenderer.getStringBoundedHeight(texts[i], Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
+				float renderY = client.textRenderer.getWrappedLinesHeight(texts[i], Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
 				Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
 				client.textRenderer.draw(texts[i], renderX, renderY, colors[i], false, matrix4f, immediate, true, 0, 0xF000F0);
 				immediate.draw();
