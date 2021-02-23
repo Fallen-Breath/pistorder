@@ -22,6 +22,7 @@ public abstract class GameOptionsMixin
 	public void loadPistorderConfigure(CallbackInfo info)
 	{
 		PistorderConfigure.load();
+		PistorderConfigure.save();
 		this.keysAll = PistorderKeyBinding.updateVanillaKeyBinding(this.keysAll);
 	}
 

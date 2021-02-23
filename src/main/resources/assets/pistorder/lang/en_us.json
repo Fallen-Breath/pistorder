@@ -3,5 +3,6 @@
   "pistorder.retract": "Retract",
   "pistorder.block_count.pre": "",
   "pistorder.block_count.post": " blocks",
-  "pistorder.clear_display": " Pistorder information display cleared"
+  "pistorder.clear_display": "Clear Pistorder display",
+  "pistorder.clear_display.hint": "Pistorder information display cleared"
 }

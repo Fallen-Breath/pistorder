@@ -90,7 +90,7 @@ public class Pistorder
 	{
 		if (PistorderKeyBinding.CLEAR_DISPLAY_KEY.wasPressed())
 		{
-			MinecraftClient.getInstance().inGameHud.setOverlayMessage(new TranslatableText("pistorder.clear_display"), false);
+			MinecraftClient.getInstance().inGameHud.setOverlayMessage(new TranslatableText("pistorder.clear_display.hint"), false);
 			this.displayMap.clear();
 		}
 	}

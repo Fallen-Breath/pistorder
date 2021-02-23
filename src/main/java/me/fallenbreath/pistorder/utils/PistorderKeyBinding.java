@@ -1,20 +1,14 @@
 package me.fallenbreath.pistorder.utils;
 
 import com.google.common.collect.Lists;
-import me.fallenbreath.pistorder.PistorderMod;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
 
 import java.util.List;
 
 public class PistorderKeyBinding
 {
-	public static final KeyBinding CLEAR_DISPLAY_KEY = new KeyBinding(
-			(new Identifier(PistorderMod.MOD_ID, "clear")).toString(),
-			InputUtil.fromName("key.keyboard.o").getKeyCode(),
-			"key.categories.misc"
-	);
+	public static final KeyBinding CLEAR_DISPLAY_KEY = new KeyBinding("pistorder.clear_display", InputUtil.fromName("key.keyboard.o").getKeyCode(), "key.categories.misc");
 
 	public static KeyBinding[] updateVanillaKeyBinding(KeyBinding[] keysAll)
 	{
