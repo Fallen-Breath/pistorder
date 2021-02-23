@@ -1,6 +1,6 @@
 package me.fallenbreath.pistorder.mixins;
 
-import me.fallenbreath.pistorder.Pistorder;
+import me.fallenbreath.pistorder.impl.Pistorder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;

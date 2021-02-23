@@ -1,6 +1,6 @@
 package me.fallenbreath.pistorder.mixins;
 
-import me.fallenbreath.pistorder.Pistorder;
+import me.fallenbreath.pistorder.impl.Pistorder;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;

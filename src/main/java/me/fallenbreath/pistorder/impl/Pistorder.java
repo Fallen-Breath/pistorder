@@ -1,9 +1,10 @@
-package me.fallenbreath.pistorder;
+package me.fallenbreath.pistorder.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
+import me.fallenbreath.pistorder.utils.PistorderKeyBinding;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;

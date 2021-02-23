@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "me.fallenbreath.pistorder.mixins",
   "compatibilityLevel": "JAVA_8",
-  "plugin": "me.fallenbreath.pistorder.PistorderMixinPlugin",
+  "plugin": "me.fallenbreath.pistorder.utils.PistorderMixinPlugin",
   "mixins": [
     "GameOptionsMixin",
     "PistonBlockAccessor"

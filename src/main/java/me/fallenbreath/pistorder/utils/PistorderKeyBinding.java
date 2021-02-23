@@ -1,6 +1,7 @@
-package me.fallenbreath.pistorder;
+package me.fallenbreath.pistorder.utils;
 
 import com.google.common.collect.Lists;
+import me.fallenbreath.pistorder.PistorderMod;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;

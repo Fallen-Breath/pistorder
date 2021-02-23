@@ -1,5 +1,6 @@
-package me.fallenbreath.pistorder;
+package me.fallenbreath.pistorder.utils;
 
+import me.fallenbreath.pistorder.PistorderMod;
 import net.minecraft.client.util.InputUtil;
 
 import java.io.File;
@@ -18,12 +19,13 @@ public class PistorderConfigure
 		try
 		{
 			readConfig();
-			PistorderMod.LOGGER.error(String.format("Configure file for %s loaded", PistorderMod.MOD_NAME));
+			PistorderMod.LOGGER.info("Configure file loaded");
 		}
 		catch (IOException e)
 		{
-			PistorderMod.LOGGER.error("Fail to load configure: " + e);
+			PistorderMod.LOGGER.error("Failed to load configure: " + e);
 			PistorderMod.LOGGER.error("Use default configure");
+			save();
 		}
 	}
 
@@ -32,11 +34,11 @@ public class PistorderConfigure
 		try
 		{
 			writeConfig();
+			PistorderMod.LOGGER.info("Configure file saved");
 		}
 		catch (IOException e)
 		{
-			PistorderMod.LOGGER.error("Fail to save configure: " + e);
-			PistorderMod.LOGGER.error("Use default configure");
+			PistorderMod.LOGGER.error("Failed to save configure: " + e);
 		}
 	}
 
@@ -55,7 +57,7 @@ public class PistorderConfigure
 			String key = (String)entry.getKey();
 			String value = (String)entry.getValue();
 
-			if (key.equals("key_" + PistorderKeyBinding.CLEAR_DISPLAY_KEY.getId()))
+			if (key.equals("keybinding_clear"))
 			{
 				PistorderKeyBinding.CLEAR_DISPLAY_KEY.setKeyCode(InputUtil.fromName(value));
 			}
@@ -86,7 +88,7 @@ public class PistorderConfigure
 	{
 		Properties properties = new Properties();
 
-		properties.put("key_" + PistorderKeyBinding.CLEAR_DISPLAY_KEY.getId(), PistorderKeyBinding.CLEAR_DISPLAY_KEY.getName());
+		properties.put("keybinding_clear", PistorderKeyBinding.CLEAR_DISPLAY_KEY.getName());
 
 		return properties;
 	}
