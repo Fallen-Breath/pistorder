@@ -8,11 +8,12 @@ import java.util.List;
 
 public class PistorderKeyBinding
 {
-	public static final KeyBinding CLEAR_DISPLAY_KEY = new KeyBinding("pistorder.clear_display", InputUtil.fromTranslationKey("key.keyboard.o").getCode(), "key.categories.misc");
+	public static final KeyBinding CLEAR_DISPLAY_KEY = new KeyBinding("pistorder.clear_display", InputUtil.fromTranslationKey("key.keyboard.p").getCode(), "key.categories.misc");
 
 	public static KeyBinding[] updateVanillaKeyBinding(KeyBinding[] keysAll)
 	{
 		List<KeyBinding> list = Lists.newArrayList(keysAll);
+		list.remove(CLEAR_DISPLAY_KEY);
 		list.add(CLEAR_DISPLAY_KEY);
 		return list.toArray(new KeyBinding[0]);
 	}
