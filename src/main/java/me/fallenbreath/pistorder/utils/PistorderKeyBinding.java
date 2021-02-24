@@ -1,7 +1,7 @@
 package me.fallenbreath.pistorder.utils;
 
 import com.google.common.collect.Lists;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
 import java.util.List;
