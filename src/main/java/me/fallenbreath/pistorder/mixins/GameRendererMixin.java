@@ -1,6 +1,6 @@
 package me.fallenbreath.pistorder.mixins;
 
-import me.fallenbreath.pistorder.Pistorder;
+import me.fallenbreath.pistorder.impl.Pistorder;
 import net.minecraft.client.render.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

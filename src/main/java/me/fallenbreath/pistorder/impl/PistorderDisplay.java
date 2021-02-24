@@ -1,4 +1,4 @@
-package me.fallenbreath.pistorder;
+package me.fallenbreath.pistorder.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;

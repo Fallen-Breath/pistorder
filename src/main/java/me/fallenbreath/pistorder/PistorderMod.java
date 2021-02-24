@@ -6,11 +6,14 @@ import org.apache.logging.log4j.Logger;
 
 public class PistorderMod implements ClientModInitializer
 {
+	public static final String MOD_NAME = "Pistorder";
+	public static final String MOD_ID = "pistorder";
+
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
 	public void onInitializeClient()
 	{
-		// owo
+		// awa
 	}
 }
