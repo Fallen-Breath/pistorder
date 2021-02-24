@@ -1,4 +1,4 @@
-package me.fallenbreath.pistorder;
+package me.fallenbreath.pistorder.utils;
 
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
 import org.objectweb.asm.tree.ClassNode;

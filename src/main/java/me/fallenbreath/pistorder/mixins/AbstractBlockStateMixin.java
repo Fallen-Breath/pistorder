@@ -1,6 +1,7 @@
 package me.fallenbreath.pistorder.mixins;
 
-import me.fallenbreath.pistorder.Pistorder;
+import me.fallenbreath.pistorder.impl.Pistorder;
+import me.fallenbreath.pistorder.utils.PistorderConfigure;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -21,7 +22,7 @@ public abstract class AbstractBlockStateMixin
 		if (world.isClient)
 		{
 			ActionResult result = Pistorder.getInstance().onPlayerRightClickBlock(world, player, hand, hit);
-			if (result.isAccepted())
+			if (result.isAccepted() && PistorderConfigure.SWING_HAND)
 			{
 				cir.setReturnValue(result);
 			}
