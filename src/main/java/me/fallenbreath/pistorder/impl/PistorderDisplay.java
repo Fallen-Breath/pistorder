@@ -1,4 +1,4 @@
-package me.fallenbreath.pistorder;
+package me.fallenbreath.pistorder.impl;
 
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;

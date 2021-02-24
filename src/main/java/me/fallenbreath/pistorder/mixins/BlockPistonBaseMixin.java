@@ -1,6 +1,6 @@
 package me.fallenbreath.pistorder.mixins;
 
-import me.fallenbreath.pistorder.Pistorder;
+import me.fallenbreath.pistorder.impl.Pistorder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.state.IBlockState;

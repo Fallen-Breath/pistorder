@@ -1,18 +1,21 @@
-package me.fallenbreath.pistorder;
+package me.fallenbreath.pistorder.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
+import me.fallenbreath.pistorder.utils.PistorderKeyBinding;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -69,6 +72,7 @@ public class Pistorder
 
 	public void render(float tickDelta)
 	{
+		this.tickKeyBinding();
 		List<Pair<World, BlockPos>> removeList = Lists.newArrayList();
 		this.displayMap.forEach((key, display) -> {
 			display.render(tickDelta);
@@ -78,5 +82,14 @@ public class Pistorder
 			}
 		});
 		removeList.forEach(this.displayMap::remove);
+	}
+
+	private void tickKeyBinding()
+	{
+		if (PistorderKeyBinding.CLEAR_DISPLAY_KEY.isPressed())
+		{
+			Minecraft.getInstance().ingameGUI.setOverlayMessage(new TextComponentTranslation("pistorder.clear_display.hint"), false);
+			this.displayMap.clear();
+		}
 	}
 }

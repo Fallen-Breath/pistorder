@@ -8,6 +8,9 @@ import org.spongepowered.asm.mixin.Mixins;
 
 public class PistorderMod implements InitializationListener
 {
+	public static final String MOD_NAME = "Pistorder";
+	public static final String MOD_ID = "pistorder";
+
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	@Override

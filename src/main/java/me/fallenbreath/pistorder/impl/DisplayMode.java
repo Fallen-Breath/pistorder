@@ -1,4 +1,4 @@
-package me.fallenbreath.pistorder;
+package me.fallenbreath.pistorder.impl;
 
 public enum DisplayMode
 {
