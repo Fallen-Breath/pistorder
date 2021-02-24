@@ -1,14 +1,17 @@
-package me.fallenbreath.pistorder;
+package me.fallenbreath.pistorder.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
+import me.fallenbreath.pistorder.utils.PistorderKeyBinding;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -71,6 +74,7 @@ public class Pistorder
 
 	public void render(float tickDelta)
 	{
+		this.tickKeyBinding();
 		List<Pair<World, BlockPos>> removeList = Lists.newArrayList();
 		this.displayMap.forEach((key, display) -> {
 			display.render(tickDelta);
@@ -80,5 +84,14 @@ public class Pistorder
 			}
 		});
 		removeList.forEach(this.displayMap::remove);
+	}
+
+	private void tickKeyBinding()
+	{
+		if (PistorderKeyBinding.CLEAR_DISPLAY_KEY.wasPressed())
+		{
+			MinecraftClient.getInstance().inGameHud.setOverlayMessage(new TranslatableText("pistorder.clear_display.hint"), false);
+			this.displayMap.clear();
+		}
 	}
 }
