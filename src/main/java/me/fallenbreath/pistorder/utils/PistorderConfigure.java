@@ -28,8 +28,16 @@ public class PistorderConfigure
 
 	static
 	{
-		register("keybinding_clear", v -> PistorderKeyBinding.CLEAR_DISPLAY_KEY.setKeyCode(InputUtil.fromName(v)), PistorderKeyBinding.CLEAR_DISPLAY_KEY::getName);
-		register("swing_hand", v -> SWING_HAND = Boolean.parseBoolean(v), () -> String.valueOf(SWING_HAND));
+		register(
+				"keybinding_clear",
+				v -> PistorderKeyBinding.CLEAR_DISPLAY_KEY.setKeyCode(InputUtil.fromName(v)),
+				PistorderKeyBinding.CLEAR_DISPLAY_KEY::getName
+		);
+		register(
+				"swing_hand",
+				v -> SWING_HAND = Boolean.parseBoolean(v),
+				() -> String.valueOf(SWING_HAND)
+		);
 	}
 
 	public static void load()
