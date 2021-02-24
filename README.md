@@ -23,6 +23,8 @@ Click the piston again to hide the information display. Information displays wil
 
 If there is an air gap between the piston and a block, clicking again will switch into indirect mode. It will assume the piston is interacting with the block and show the related push / retract information
 
+Press the clear hot key (default `p`) to remove all information display manually
+
 For mods that modifies the piston push limit, it's currently compatible with [Fabric Carpet](https://github.com/gnembon/fabric-carpet) and [Quick Carpet](https://github.com/DeadlyMC/QuickCarpet114)
 
 It's a client side only mod, no need to be installed on the server side
