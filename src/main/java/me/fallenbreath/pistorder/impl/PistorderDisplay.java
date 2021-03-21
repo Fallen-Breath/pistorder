@@ -2,6 +2,7 @@ package me.fallenbreath.pistorder.impl;
 
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
+import me.fallenbreath.pistorder.utils.PistorderConfigure;
 import net.minecraft.block.state.BlockPistonStructureHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
