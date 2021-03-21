@@ -3,6 +3,7 @@ package me.fallenbreath.pistorder.impl;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
+import me.fallenbreath.pistorder.utils.PistorderConfigure;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonHandler;
@@ -85,6 +86,11 @@ public class PistorderDisplay
 	private void setDisplayMode(DisplayMode mode)
 	{
 		this.displayMode = mode;
+		this.refreshInformation();
+	}
+
+	private void refreshInformation()
+	{
 		BlockPos startPos = null;
 		switch (this.displayMode)
 		{
@@ -261,6 +267,11 @@ public class PistorderDisplay
 			{
 				this.disable();
 				return;
+			}
+
+			if (PistorderConfigure.DYNAMICALLY_INFORMATION_UPDATE)
+			{
+				this.refreshInformation();
 			}
 
 			String actionKey = this.actionType.isPush() ? "pistorder.push" : "pistorder.retract";

@@ -20,6 +20,7 @@ public class PistorderConfigure
 	private static final Map<String, ConfigureElement> elements = Maps.newHashMap();
 
 	public static boolean SWING_HAND = true;
+	public static boolean DYNAMICALLY_INFORMATION_UPDATE = true;
 
 	private static void register(String key, Consumer<String> reader, Supplier<String> getter)
 	{
@@ -37,6 +38,11 @@ public class PistorderConfigure
 				"swing_hand",
 				v -> SWING_HAND = Boolean.parseBoolean(v),
 				() -> String.valueOf(SWING_HAND)
+		);
+		register(
+				"dynamically_information_update",
+				v -> DYNAMICALLY_INFORMATION_UPDATE = Boolean.parseBoolean(v),
+				() -> String.valueOf(DYNAMICALLY_INFORMATION_UPDATE)
 		);
 	}
 
