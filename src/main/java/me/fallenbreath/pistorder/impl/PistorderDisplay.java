@@ -255,7 +255,7 @@ public class PistorderDisplay
 			return false;
 		}
 		Chunk chunk = world.getChunk(this.pos.getX() >> 4, this.pos.getZ() >> 4);
-		if (chunk.isEmpty())  // it's a real loaded chunk
+		if (!chunk.isEmpty())  // it's a real loaded chunk
 		{
 			return chunk.getBlockState(this.pos).equals(this.blockState);
 		}
