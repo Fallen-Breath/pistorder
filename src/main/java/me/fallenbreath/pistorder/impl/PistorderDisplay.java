@@ -80,6 +80,11 @@ public class PistorderDisplay
 	private void setDisplayMode(DisplayMode mode)
 	{
 		this.displayMode = mode;
+		this.refreshInformation();
+	}
+
+	private void refreshInformation()
+	{
 		BlockPos startPos = null;
 		switch (this.displayMode)
 		{
@@ -257,6 +262,11 @@ public class PistorderDisplay
 			{
 				this.disable();
 				return;
+			}
+
+			if (PistorderConfigure.DYNAMICALLY_INFORMATION_UPDATE)
+			{
+				this.refreshInformation();
 			}
 
 			String actionKey = this.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
