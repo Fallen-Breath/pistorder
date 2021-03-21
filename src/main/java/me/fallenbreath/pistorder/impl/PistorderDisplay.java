@@ -46,6 +46,9 @@ public class PistorderDisplay
 
 	private DisplayMode displayMode;
 
+	// used for dynamically_information_update
+	private long lastUpdateTime = -1;
+
 	public PistorderDisplay(World world, BlockPos pos, IBlockState blockState, EnumFacing direction, PistonActionType actionType)
 	{
 		this.world = world;
@@ -78,6 +81,9 @@ public class PistorderDisplay
 		this.displayMode = DisplayMode.DISABLED;
 	}
 
+	/**
+	 * Will trigger a refresh
+	 */
 	private void setDisplayMode(DisplayMode mode)
 	{
 		this.displayMode = mode;
@@ -108,6 +114,9 @@ public class PistorderDisplay
 		}
 	}
 
+	/**
+	 * Might make the piston blink for a while if the action type is retract
+	 */
 	private void analyze(World world, BlockPos pos, EnumFacing pistonFacing, PistonActionType PistonActionType)
 	{
 		IBlockState[] states = new IBlockState[2];
@@ -128,6 +137,12 @@ public class PistorderDisplay
 			pistonHandler.canMove();
 		}
 
+		if (PistonActionType.isRetract())
+		{
+			world.setBlockState(pos, states[0], 18);
+			world.setBlockState(pos.offset(pistonFacing), states[1], 18);
+		}
+
 		this.brokenBlocks = pistonHandler.getBlocksToDestroy();
 		this.movedBlocks = pistonHandler.getBlocksToMove();
 		// reverse the list for correct order
@@ -135,12 +150,6 @@ public class PistorderDisplay
 		Collections.reverse(this.movedBlocks);
 
 		PushLimitManager.getInstance().restorePushLimit();
-
-		if (PistonActionType.isRetract())
-		{
-			world.setBlockState(pos, states[0], 18);
-			world.setBlockState(pos.offset(pistonFacing), states[1], 18);
-		}
 	}
 
 	private boolean tryIndirectMode()
@@ -267,7 +276,11 @@ public class PistorderDisplay
 
 			if (PistorderConfigure.DYNAMICALLY_INFORMATION_UPDATE)
 			{
-				this.refreshInformation();
+				if (this.world.getGameTime() != this.lastUpdateTime)
+				{
+					this.refreshInformation();
+					this.lastUpdateTime = this.world.getGameTime();
+				}
 			}
 
 			String actionKey = this.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
