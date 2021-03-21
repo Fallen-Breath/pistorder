@@ -12,6 +12,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.AffineTransformation;
@@ -195,16 +196,16 @@ public class PistorderDisplay
 			double camX = camera.getPos().x;
 			double camY = camera.getPos().y;
 			double camZ = camera.getPos().z;
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)(x - camX), (float)(y - camY), (float)(z - camZ));
-			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
-			RenderSystem.multMatrix(new Matrix4f(camera.getRotation()));
-			RenderSystem.scalef(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
+			MatrixStack matrixStack = RenderSystem.getModelViewStack();
+			matrixStack.push();
+			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
+			matrixStack.method_34425(new Matrix4f(camera.getRotation()));
+			matrixStack.scale(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
 			RenderSystem.enableTexture();
 			RenderSystem.disableDepthTest();  // visibleThroughObjects
 			RenderSystem.depthMask(true);
-			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
-			RenderSystem.enableAlphaTest();
+			matrixStack.scale(-1.0F, 1.0F, 1.0F);
+			RenderSystem.applyModelViewMatrix();
 
 			float totalWidth = 0.0F;
 			for (String text: texts)
@@ -225,9 +226,9 @@ public class PistorderDisplay
 				writtenWidth += client.textRenderer.getWidth(texts[i]);
 			}
 
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableDepthTest();
-			RenderSystem.popMatrix();
+			matrixStack.pop();
 		}
 	}
 
