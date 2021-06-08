@@ -1,8 +1,10 @@
 package me.fallenbreath.pistorder.impl;
 
+import com.google.common.collect.Lists;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
 import me.fallenbreath.pistorder.utils.PistorderConfigure;
+import me.fallenbreath.pistorder.utils.TemporaryBlockRemover;
 import net.minecraft.block.state.BlockPistonStructureHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -11,7 +13,6 @@ import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -119,37 +120,35 @@ public class PistorderDisplay
 	 */
 	private void analyze(World world, BlockPos pos, EnumFacing pistonFacing, PistonActionType PistonActionType)
 	{
-		IBlockState[] states = new IBlockState[2];
+		// backing up block states for potential piston (head) block position
+		TemporaryBlockRemover blockRemover = new TemporaryBlockRemover(this.world);
+		blockRemover.add(this.pos);  // piston pos, in case it's in-direct mode
 		if (PistonActionType.isRetract())
 		{
-			states[0] = world.getBlockState(pos);  // piston base
-			states[1] = world.getBlockState(pos.offset(pistonFacing));  // piston head
-			world.setBlockState(pos, Blocks.AIR.getDefaultState(), 18);
-			world.setBlockState(pos.offset(pistonFacing), Blocks.AIR.getDefaultState(), 18);
+			blockRemover.add(pos);  // piston base
+			blockRemover.add(pos.offset(pistonFacing));  // piston head
 		}
+		blockRemover.removeBlocks();
 
 		BlockPistonStructureHelper pistonHandler = new BlockPistonStructureHelper(world, pos, pistonFacing, PistonActionType.isPush());
 		this.moveSuccess = pistonHandler.canMove();
 
 		if (!this.moveSuccess)
 		{
-			PushLimitManager.getInstance().overwritePushLimit(MAX_PUSH_LIMIT_FOR_CALC);
+			int newPushLimit = Math.max(PushLimitManager.getInstance().getPushLimit(), MAX_PUSH_LIMIT_FOR_CALC);
+			PushLimitManager.getInstance().overwritePushLimit(newPushLimit);
 			pistonHandler.canMove();
 		}
 
-		if (PistonActionType.isRetract())
-		{
-			world.setBlockState(pos, states[0], 18);
-			world.setBlockState(pos.offset(pistonFacing), states[1], 18);
-		}
+		// restoring things
+		blockRemover.restoreBlocks();
+		PushLimitManager.getInstance().restorePushLimit();  // it's ok if the push limit hasn't been overwritten
 
-		this.brokenBlocks = pistonHandler.getBlocksToDestroy();
-		this.movedBlocks = pistonHandler.getBlocksToMove();
-		// reverse the list for correct order
+		this.brokenBlocks = Lists.newArrayList(pistonHandler.getBlocksToDestroy());
+		this.movedBlocks = Lists.newArrayList(pistonHandler.getBlocksToMove());
+		// reverse the list for the correct order
 		Collections.reverse(this.brokenBlocks);
 		Collections.reverse(this.movedBlocks);
-
-		PushLimitManager.getInstance().restorePushLimit();
 	}
 
 	private boolean tryIndirectMode()
