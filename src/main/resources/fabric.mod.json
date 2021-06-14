@@ -15,7 +15,7 @@
 
   "icon": "assets/pistorder/icon.png",
 
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "main": [
     ]
