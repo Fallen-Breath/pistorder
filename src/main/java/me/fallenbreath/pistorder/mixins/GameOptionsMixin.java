@@ -2,8 +2,8 @@ package me.fallenbreath.pistorder.mixins;
 
 import me.fallenbreath.pistorder.utils.PistorderConfigure;
 import me.fallenbreath.pistorder.utils.PistorderKeyBinding;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.KeyBinding;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;

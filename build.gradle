@@ -8,7 +8,7 @@ repositories {
 		url 'https://masa.dy.fi/maven'
 	}
 	maven {
-		url 'https://maven.skyrising.xyz'
+		url 'https://www.cursemaven.com'
 	}
 }
 
@@ -25,9 +25,7 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "carpet:fabric-carpet:${project.fabric_carpet_version}"
-	modCompileOnly("quickcarpet:quickcarpet:${project.quick_carpet_version}") {
-		exclude group: 'io.github.prospector', module: 'modmenu'
-	}
+	modCompileOnly "curse.maven:quickcarpet-451876:${project.quick_carpet_curseforge_file_id}"
 
 	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
 	include fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
