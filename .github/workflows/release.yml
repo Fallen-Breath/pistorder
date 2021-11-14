@@ -13,8 +13,16 @@ jobs:
     strategy:
       matrix:
         include:
-          - branch: 1.15.2
-          - branch: 1.16.5
+          - branch: 1.14.4-fabric
+            cf_game_versions: modloader:fabric,minecraft-1-14:1.14.4
+          - branch: 1.15.2-fabric
+            cf_game_versions: modloader:fabric,minecraft-1-15:1.15.2
+          - branch: 1.16.5-fabric
+            cf_game_versions: modloader:fabric,minecraft-1-16:1.16.4,minecraft-1-16:1.16.5
+          - branch: 1.17-fabric
+            cf_game_versions: modloader:fabric,minecraft-1-17:1.17.1
+          - branch: 1.18-fabric
+            cf_game_versions: modloader:fabric,minecraft-1-18:1.18-Snapshot
 
     steps:
       - uses: actions/checkout@v2
@@ -59,3 +67,16 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: build/libs/${{ steps.findjar.outputs.jarname }}
+
+      - name: Upload to CurseForge
+        uses: itsmeow/curseforge-upload@v3
+        with:
+          token: ${{ secrets.CF_API_TOKEN }}
+          project_id: 430118  # https://www.curseforge.com/minecraft/mc-mods/pistorder
+          game_endpoint: minecraft
+          game_versions: ${{ matrix.cf_game_versions }}
+          changelog_type: markdown
+          changelog: ${{ github.event.release.body }}
+          file_path: build/libs/${{ steps.findjar.outputs.jarname }}
+          release_type: release
+          relations: carpet:requiredDependency
