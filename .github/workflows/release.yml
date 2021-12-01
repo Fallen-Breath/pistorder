@@ -79,4 +79,3 @@ jobs:
           changelog: ${{ github.event.release.body }}
           file_path: build/libs/${{ steps.findjar.outputs.jarname }}
           release_type: release
-          relations: carpet:requiredDependency
