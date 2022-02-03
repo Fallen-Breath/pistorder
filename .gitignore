@@ -35,3 +35,7 @@ run/
 # rift
 
 rift_libs/
+
+# github
+
+.github
