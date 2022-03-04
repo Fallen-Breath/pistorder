@@ -17,6 +17,7 @@ It will show:
 - The amount of the block that will get moved by the piston (even when it exceeds the piston push limit, maximum 128 blocks)
 - The push order of the blocks to be moved
 - The push order of the blocks to be destroyed
+- The immovable block that cause push failure if presents
 
 Information will still be displayed if the piston fails to push / retract, but if it fails due to an in-movable block the result might be incorrect
 
