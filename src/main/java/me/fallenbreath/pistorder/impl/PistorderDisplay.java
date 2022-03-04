@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
 import me.fallenbreath.pistorder.utils.PistorderConfigure;
-import me.fallenbreath.pistorder.utils.TemporaryBlockRemover;
+import me.fallenbreath.pistorder.utils.TemporaryBlockReplacer;
 import net.minecraft.block.state.BlockPistonStructureHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -121,7 +122,7 @@ public class PistorderDisplay
 	 */
 	private void analyze(World world, BlockPos simulatedPistonPos, EnumFacing pistonFacing, PistonActionType PistonActionType)
 	{
-		BlockState air = Blocks.AIR.getDefaultState();
+		IBlockState air = Blocks.AIR.getDefaultState();
 
 		// backing up block states for potential piston (head) block position
 		TemporaryBlockReplacer blockReplacer = new TemporaryBlockReplacer(this.world);
@@ -316,7 +317,7 @@ public class PistorderDisplay
 
 			if (this.immovableBlockPos != null)
 			{
-				drawString(this.immovableBlockPos, tickDelta, 0.0F, "×", Formatting.DARK_RED.getColorValue());
+				drawString(this.immovableBlockPos, tickDelta, 0.0F, "×", TextFormatting.DARK_RED.getColor());
 			}
 		}
 	}

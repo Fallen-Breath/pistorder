@@ -1,7 +1,7 @@
 package me.fallenbreath.pistorder.utils;
 
 import com.google.common.collect.Lists;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -13,15 +13,15 @@ public class TemporaryBlockReplacer
 
 	private final World world;
 	private final List<BlockPos> blockPositions = Lists.newArrayList();
-	private final List<BlockState> targetStates = Lists.newArrayList();
-	private final List<BlockState> originStates = Lists.newArrayList();
+	private final List<IBlockState> targetStates = Lists.newArrayList();
+	private final List<IBlockState> originStates = Lists.newArrayList();
 
 	public TemporaryBlockReplacer(World world)
 	{
 		this.world = world;
 	}
 
-	public void add(BlockPos pos, BlockState blockState)
+	public void add(BlockPos pos, IBlockState blockState)
 	{
 		this.blockPositions.add(pos);
 		this.targetStates.add(blockState);
