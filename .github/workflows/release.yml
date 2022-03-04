@@ -135,6 +135,7 @@ jobs:
 
           loaders: fabric
           game-versions: ${{ matrix.game_versions }}
+          dependencies: ''
           version-resolver: exact
 
           retry-attempts: 3
