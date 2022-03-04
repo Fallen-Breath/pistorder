@@ -5,13 +5,13 @@
   "compatibilityLevel": "JAVA_8",
   "plugin": "me.fallenbreath.pistorder.utils.PistorderMixinPlugin",
   "mixins": [
-    "GameOptionsMixin",
-    "PistonBlockAccessor"
-  ],
-  "client": [
     "BlockStateMixin",
+    "GameOptionsMixin",
+    "PistonBlockAccessor",
     "PistonHandlerMixin",
     "WorldRendererMixin"
+  ],
+  "client": [
   ],
   "injectors": {
     "defaultRequire": 1
