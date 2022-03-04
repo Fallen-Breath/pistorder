@@ -16,14 +16,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class GameOptionsMixin
 {
 	@Mutable
-	@Shadow @Final public KeyBinding[] keysAll;
+	@Shadow @Final public KeyBinding[] allKeys;
 
 	@Inject(method = "load", at = @At("HEAD"))
 	public void loadPistorderConfigure(CallbackInfo info)
 	{
 		PistorderConfigure.load();
 		PistorderConfigure.save();
-		this.keysAll = PistorderKeyBinding.updateVanillaKeyBinding(this.keysAll);
+		this.allKeys = PistorderKeyBinding.updateVanillaKeyBinding(this.allKeys);
 	}
 
 	@Inject(method = "write", at = @At("HEAD"))
