@@ -37,9 +37,10 @@ public class PistorderDisplay
 	private List<BlockPos> movedBlocks;
 	private List<BlockPos> brokenBlocks;
 	private boolean moveSuccess;
+	private BlockPos immovableBlockPos;
 
 	public final World world;
-	public final BlockPos pos;
+	public final BlockPos pistonPos;
 	public final IBlockState blockState;
 	public final EnumFacing direction;
 	public PistonActionType actionType;
@@ -50,15 +51,15 @@ public class PistorderDisplay
 	// used for dynamically_information_update
 	private long lastUpdateTime = -1;
 
-	public PistorderDisplay(World world, BlockPos pos, IBlockState blockState, EnumFacing direction, PistonActionType actionType)
+	public PistorderDisplay(World world, BlockPos pistonPos, IBlockState blockState, EnumFacing direction, PistonActionType actionType)
 	{
 		this.world = world;
-		this.pos = pos;
+		this.pistonPos = pistonPos;
 		this.blockState = blockState;
 		this.direction = direction;
 		this.actionType = actionType;
 		this.setDisplayMode(DisplayMode.DIRECT);
-		Random random = new Random(pos.hashCode());
+		Random random = new Random(pistonPos.hashCode());
 		this.color = (random.nextInt(0x50) + 0xAF) + ((random.nextInt(0x50) + 0xAF) << 8) + ((random.nextInt(0x50) + 0xAF) << 16);
 	}
 
@@ -93,44 +94,49 @@ public class PistorderDisplay
 
 	private void refreshInformation()
 	{
-		BlockPos startPos = null;
+		BlockPos simulatedPistonPos = null;
 		switch (this.displayMode)
 		{
 			case DIRECT:
-				startPos = this.pos;
+				simulatedPistonPos = this.pistonPos;
 				break;
 			case INDIRECT:
-				startPos = this.pos;
+				simulatedPistonPos = this.pistonPos;
 				if (!this.isStickyPiston())
 				{
-					startPos = startPos.offset(this.getPistonFacing());
+					simulatedPistonPos = simulatedPistonPos.offset(this.getPistonFacing());
 				}
 				break;
 			case DISABLED:
 				break;
 		}
-		if (startPos != null)
+		if (simulatedPistonPos != null)
 		{
-			this.analyze(this.world, startPos, this.getPistonFacing(), this.actionType);
+			this.analyze(this.world, simulatedPistonPos, this.getPistonFacing(), this.actionType);
 		}
 	}
 
 	/**
 	 * Might make the piston blink for a while if the action type is retract
 	 */
-	private void analyze(World world, BlockPos pos, EnumFacing pistonFacing, PistonActionType PistonActionType)
+	private void analyze(World world, BlockPos simulatedPistonPos, EnumFacing pistonFacing, PistonActionType PistonActionType)
 	{
+		BlockState air = Blocks.AIR.getDefaultState();
+
 		// backing up block states for potential piston (head) block position
-		TemporaryBlockRemover blockRemover = new TemporaryBlockRemover(this.world);
-		blockRemover.add(this.pos);  // piston pos, in case it's in-direct mode
+		TemporaryBlockReplacer blockReplacer = new TemporaryBlockReplacer(this.world);
+		// not necessary to replace the piston pos with barrier or something in-movable since vanilla PistonHandler handles it
+		if (!this.pistonPos.equals(simulatedPistonPos))
+		{
+			blockReplacer.add(this.pistonPos, air);  // piston pos, in case it's in-direct mode
+		}
 		if (PistonActionType.isRetract())
 		{
-			blockRemover.add(pos);  // piston base
-			blockRemover.add(pos.offset(pistonFacing));  // piston head
+			blockReplacer.add(simulatedPistonPos.offset(pistonFacing), air);  // simulated piston head
 		}
-		blockRemover.removeBlocks();
+		blockReplacer.removeBlocks();
 
-		BlockPistonStructureHelper pistonHandler = new BlockPistonStructureHelper(world, pos, pistonFacing, PistonActionType.isPush());
+		BlockPistonStructureHelper pistonHandler = new BlockPistonStructureHelper(world, simulatedPistonPos, pistonFacing, PistonActionType.isPush());
 		this.moveSuccess = pistonHandler.canMove();
 
 		if (!this.moveSuccess)
@@ -141,11 +147,12 @@ public class PistorderDisplay
 		}
 
 		// restoring things
-		blockRemover.restoreBlocks();
+		blockReplacer.restoreBlocks();
 		PushLimitManager.getInstance().restorePushLimit();  // it's ok if the push limit hasn't been overwritten
 
 		this.brokenBlocks = Lists.newArrayList(pistonHandler.getBlocksToDestroy());
 		this.movedBlocks = Lists.newArrayList(pistonHandler.getBlocksToMove());
+		this.immovableBlockPos = ((ImmovableBlockPosRecorder)pistonHandler).getImmovableBlockPos();
 		// reverse the list for the correct order
 		Collections.reverse(this.brokenBlocks);
 		Collections.reverse(this.movedBlocks);
@@ -153,8 +160,8 @@ public class PistorderDisplay
 
 	private boolean tryIndirectMode()
 	{
-		IBlockState blockInFront1 = this.world.getBlockState(this.pos.offset(this.getPistonFacing(), 1));
-		IBlockState blockInFront2 = this.world.getBlockState(this.pos.offset(this.getPistonFacing(), 2));
+		IBlockState blockInFront1 = this.world.getBlockState(this.pistonPos.offset(this.getPistonFacing(), 1));
+		IBlockState blockInFront2 = this.world.getBlockState(this.pistonPos.offset(this.getPistonFacing(), 2));
 		if (blockInFront1.isAir() && !blockInFront2.isAir())
 		{
 			if (this.isStickyPiston())
@@ -253,10 +260,10 @@ public class PistorderDisplay
 		{
 			return false;
 		}
-		Chunk chunk = world.getChunk(this.pos.getX() >> 4, this.pos.getZ() >> 4);
-		if (!chunk.isEmpty())  // it's a real loaded chunk
+		Chunk chunk = world.getChunk(this.pistonPos.getX() >> 4, this.pistonPos.getZ() >> 4);
+		if (!chunk.isEmpty())  // it's really a loaded chunk
 		{
-			return chunk.getBlockState(this.pos).equals(this.blockState);
+			return chunk.getBlockState(this.pistonPos).equals(this.blockState);
 		}
 		return true;
 	}
@@ -286,10 +293,10 @@ public class PistorderDisplay
 			String actionResult = this.moveSuccess ? INDICATOR_SUCCESS : INDICATOR_FAIL;
 			int goldValue = TextFormatting.GOLD.getColor();
 
-			drawString(this.pos, tickDelta, -0.5F,String.format("%s %s", I18n.format(actionKey), actionResult),goldValue);
+			drawString(this.pistonPos, tickDelta, -0.5F,String.format("%s %s", I18n.format(actionKey), actionResult),goldValue);
 
 			drawString(
-					this.pos, tickDelta, 0.5F,
+					this.pistonPos, tickDelta, 0.5F,
 					new String[]{
 							I18n.format("pistorder.block_count.pre"),
 							String.valueOf(this.movedBlocks.size()),
@@ -305,6 +312,11 @@ public class PistorderDisplay
 			for (int i = 0; i < this.brokenBlocks.size(); i++)
 			{
 				drawString(this.brokenBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), TextFormatting.RED.getColor());
+			}
+
+			if (this.immovableBlockPos != null)
+			{
+				drawString(this.immovableBlockPos, tickDelta, 0.0F, "×", Formatting.DARK_RED.getColorValue());
 			}
 		}
 	}

@@ -13,7 +13,7 @@ public class PistorderMixinPlugin implements IMixinConfigPlugin
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName)
 	{
 		// only loads our pushLimit modifier when carpet mod not loaded
-		if (mixinClassName.endsWith(".BlockPistonStructureHelperMixin"))
+		if (mixinClassName.endsWith(".BlockPistonStructureHelperPushLimitMixin"))
 		{
 			return PushLimitManager.getInstance().shouldLoadPistorderPushLimitMixin();
 		}

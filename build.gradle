@@ -18,7 +18,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'java'
 
 archivesBaseName = project.archives_base_name
-version = 'mc' + project.minecraft_version + '-' + project.mod_version + '-' + project.mod_brand
+version = 'mc' + project.minecraft_version + '-v' + project.mod_version + '-' + project.mod_brand
 group = project.maven_group
 
 sourceCompatibility = 1.8
