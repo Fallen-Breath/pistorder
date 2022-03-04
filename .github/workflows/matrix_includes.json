@@ -1,0 +1,22 @@
+[
+  {
+    "branch": "1.14.4-fabric",
+    "game_versions": "1.14.4"
+  },
+  {
+    "branch": "1.15.2-fabric",
+    "game_versions": "1.15.2"
+  },
+  {
+    "branch": "1.16.5-fabric",
+    "game_versions": "1.16.4\n1.16.5"
+  },
+  {
+    "branch": "1.17-fabric",
+    "game_versions": "1.17.1"
+  },
+  {
+    "branch": "1.18-fabric",
+    "game_versions": "1.18\n1.18.1\n1.18.2"
+  }
+]
