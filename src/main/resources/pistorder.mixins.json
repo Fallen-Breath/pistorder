@@ -9,6 +9,7 @@
     "GameOptionsMixin",
     "PistonBlockAccessor",
     "PistonHandlerMixin",
+    "PistonHandlerPushLimitMixin",
     "WorldRendererMixin"
   ],
   "client": [

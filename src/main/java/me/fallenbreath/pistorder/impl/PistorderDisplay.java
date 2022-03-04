@@ -42,6 +42,7 @@ public class PistorderDisplay
 	private List<BlockPos> movedBlocks;
 	private List<BlockPos> brokenBlocks;
 	private boolean moveSuccess;
+	private BlockPos immovableBlockPos;
 
 	public final World world;
 	public final BlockPos pistonPos;
@@ -156,6 +157,7 @@ public class PistorderDisplay
 
 		this.brokenBlocks = Lists.newArrayList(pistonHandler.getBrokenBlocks());
 		this.movedBlocks = Lists.newArrayList(pistonHandler.getMovedBlocks());
+		this.immovableBlockPos = ((ImmovableBlockPosRecorder)pistonHandler).getImmovableBlockPos();
 		// reverse the list for the correct order
 		Collections.reverse(this.brokenBlocks);
 		Collections.reverse(this.movedBlocks);
@@ -295,7 +297,7 @@ public class PistorderDisplay
 			String actionResult = this.moveSuccess ? INDICATOR_SUCCESS : INDICATOR_FAIL;
 			int goldValue = Formatting.GOLD.getColorValue();
 
-			drawString(this.pistonPos, tickDelta, -0.5F,String.format("%s %s", I18n.translate(actionKey), actionResult),goldValue);
+			drawString(this.pistonPos, tickDelta, -0.5F, String.format("%s %s", I18n.translate(actionKey), actionResult), goldValue);
 
 			drawString(
 					this.pistonPos, tickDelta, 0.5F,
@@ -314,6 +316,11 @@ public class PistorderDisplay
 			for (int i = 0; i < this.brokenBlocks.size(); i++)
 			{
 				drawString(this.brokenBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), Formatting.RED.getColorValue());
+			}
+
+			if (this.immovableBlockPos != null)
+			{
+				drawString(this.immovableBlockPos, tickDelta, 0.0F, "×", Formatting.DARK_RED.getColorValue());
 			}
 		}
 	}
