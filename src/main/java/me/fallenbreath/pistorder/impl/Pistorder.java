@@ -11,7 +11,7 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -90,7 +90,7 @@ public class Pistorder
 	{
 		if (PistorderKeyBinding.CLEAR_DISPLAY_KEY.wasPressed())
 		{
-			MinecraftClient.getInstance().inGameHud.setOverlayMessage(new TranslatableText("pistorder.clear_display.hint"), false);
+			MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.translatable("pistorder.clear_display.hint"), false);
 			this.displayMap.clear();
 		}
 	}
