@@ -21,10 +21,10 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
+import org.joml.Matrix4f;
 
 import java.util.Collections;
 import java.util.List;
@@ -221,7 +221,7 @@ public class PistorderDisplay
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
 			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
-			matrixStack.multiplyPositionMatrix(new Matrix4f(camera.getRotation()));
+			matrixStack.multiplyPositionMatrix(new Matrix4f().rotation(camera.getRotation()));
 			matrixStack.scale(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
 			RenderSystem.enableTexture();
 			RenderSystem.disableDepthTest();  // visibleThroughObjects
