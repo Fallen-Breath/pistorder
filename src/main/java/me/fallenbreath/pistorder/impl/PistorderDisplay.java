@@ -1,24 +1,23 @@
 package me.fallenbreath.pistorder.impl;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
 import me.fallenbreath.pistorder.utils.PistorderConfigure;
+import me.fallenbreath.pistorder.utils.RenderContext;
 import me.fallenbreath.pistorder.utils.TemporaryBlockReplacer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
@@ -200,7 +199,7 @@ public class PistorderDisplay
 	}
 
 	/**
-	 * Stolen from {@link DebugRenderer#drawString(String, double, double, double, int, float, boolean, float, boolean)}
+	 * Stolen from {@link DebugRenderer#drawString(MatrixStack, VertexConsumerProvider, String, double, double, double, int, float, boolean, float, boolean)}
 	 */
 	private static void drawString(BlockPos pos, float tickDelta, float line, String[] texts, int[] colors)
 	{
@@ -218,16 +217,16 @@ public class PistorderDisplay
 			double camX = camera.getPos().x;
 			double camY = camera.getPos().y;
 			double camZ = camera.getPos().z;
-			MatrixStack matrixStack = RenderSystem.getModelViewStack();
+			MatrixStack matrixStack = RenderContext.matrices;
 			matrixStack.push();
 			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
 			matrixStack.multiplyPositionMatrix(new Matrix4f().rotation(camera.getRotation()));
 			matrixStack.scale(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
-			RenderSystem.enableTexture();
-			RenderSystem.disableDepthTest();  // visibleThroughObjects
-			RenderSystem.depthMask(true);
+//			RenderSystem.enableTexture();
+//			RenderSystem.disableDepthTest();  // visibleThroughObjects
+//			RenderSystem.depthMask(true);
 			matrixStack.scale(-1.0F, 1.0F, 1.0F);
-			RenderSystem.applyModelViewMatrix();
+//			RenderSystem.applyModelViewMatrix();
 
 			float totalWidth = 0.0F;
 			for (String text: texts)
@@ -238,18 +237,15 @@ public class PistorderDisplay
 			float writtenWidth = 0.0F;
 			for (int i = 0; i < texts.length; i++)
 			{
-				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+				VertexConsumerProvider vertexConsumers = RenderContext.vertexConsumers;
 				float renderX = -totalWidth * 0.5F + writtenWidth;
 				float renderY = client.textRenderer.getWrappedLinesHeight(texts[i], Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
-				Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
-				client.textRenderer.draw(texts[i], renderX, renderY, colors[i], false, matrix4f, immediate, true, 0, 0xF000F0);
-				immediate.draw();
-
+				client.textRenderer.draw(texts[i], renderX, renderY, colors[i], false, matrixStack.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0xF000F0);
 				writtenWidth += client.textRenderer.getWidth(texts[i]);
 			}
 
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.enableDepthTest();
+//			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//			RenderSystem.enableDepthTest();
 			matrixStack.pop();
 		}
 	}
