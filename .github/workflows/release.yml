@@ -17,7 +17,7 @@ jobs:
     outputs:
       matrix: ${{ steps.setmatrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: 'Display current branch/tag name'
         run: echo ${{ github.ref_name }}
@@ -39,17 +39,17 @@ jobs:
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ matrix.branch }}
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 17
 
       - name: Cache gradle files
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
@@ -67,7 +67,7 @@ jobs:
           BUILD_RELEASE: true
 
       - name: Upload to action artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: '[${{ matrix.branch }}] build-artifacts'
           path: build/libs/
@@ -75,13 +75,13 @@ jobs:
       - name: Get github release information
         if: ${{ github.event_name == 'workflow_dispatch' }}
         id: get_release
-        uses: cardinalby/git-get-release-action@v1.1
+        uses: cardinalby/git-get-release-action@1.2.4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           tag: ${{ github.event.inputs.target_release_tag }}
 
-      - name: Generate publish related infomation
+      - name: Generate publish related information
         id: release_info
         run: |
           if [ $GITHUB_EVENT_NAME == 'release' ]
@@ -97,20 +97,20 @@ jobs:
 
       - name: Read Properties mod_version
         id: mod_version
-        uses: christian-draeger/read-properties@1.0.1
+        uses: christian-draeger/read-properties@1.1.1
         with:
           path: gradle.properties
           property: mod_version
 
       - name: Read Properties minecraft_version
         id: minecraft_version
-        uses: christian-draeger/read-properties@1.0.1
+        uses: christian-draeger/read-properties@1.1.1
         with:
           path: gradle.properties
           property: minecraft_version
 
       - name: Publish Minecraft Mods
-        uses: Kir-Antipov/mc-publish@v2.1
+        uses: Kir-Antipov/mc-publish@v3.2
         with:
           modrinth-id: lpin1bEg  # https://modrinth.com/mod/pistorder
           modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
