@@ -95,19 +95,12 @@ jobs:
               exit 1
           fi
 
-      - name: Read Properties mod_version
-        id: mod_version
+      - name: Read Properties
+        id: properties
         uses: christian-draeger/read-properties@1.1.1
         with:
           path: gradle.properties
-          property: mod_version
-
-      - name: Read Properties minecraft_version
-        id: minecraft_version
-        uses: christian-draeger/read-properties@1.1.1
-        with:
-          path: gradle.properties
-          property: minecraft_version
+          properties: 'mod_version minecraft_version'
 
       - name: Publish Minecraft Mods
         uses: Kir-Antipov/mc-publish@v3.2
@@ -124,8 +117,8 @@ jobs:
           files-primary: build/libs/!(*-@(dev|sources)).jar
           files-secondary: ''
 
-          name: ${{ format('Pistorder v{0} for mc{1}', steps.mod_version.outputs.value, steps.minecraft_version.outputs.value) }}
-          version: ${{ format('mc{0}-v{1}', steps.minecraft_version.outputs.value, steps.mod_version.outputs.value) }}
+          name: ${{ format('Pistorder v{0} for mc{1}', steps.properties.outputs.mod_version, steps.properties.outputs.minecraft_version) }}
+          version: ${{ format('mc{0}-v{1}', steps.properties.outputs.minecraft_version, steps.properties.outputs.mod_version) }}
           version-type: release
           changelog: ${{ format('{0}{1}', github.event.release.body, steps.get_release.outputs.body) }}  # one of them should be an empty string (null)
 
