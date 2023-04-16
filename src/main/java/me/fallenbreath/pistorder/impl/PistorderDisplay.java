@@ -1,10 +1,10 @@
 package me.fallenbreath.pistorder.impl;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
 import me.fallenbreath.pistorder.utils.PistorderConfigure;
-import me.fallenbreath.pistorder.utils.RenderContext;
 import me.fallenbreath.pistorder.utils.TemporaryBlockReplacer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,6 +12,7 @@ import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.resource.language.I18n;
@@ -201,7 +202,7 @@ public class PistorderDisplay
 	/**
 	 * Stolen from {@link DebugRenderer#drawString(MatrixStack, VertexConsumerProvider, String, double, double, double, int, float, boolean, float, boolean)}
 	 */
-	private static void drawString(BlockPos pos, float tickDelta, float line, String[] texts, int[] colors)
+	private static void drawString(MatrixStack matrixStack, BlockPos pos, float tickDelta, float line, String[] texts, int[] colors)
 	{
 		MinecraftClient client = MinecraftClient.getInstance();
 		Camera camera = client.gameRenderer.getCamera();
@@ -217,16 +218,11 @@ public class PistorderDisplay
 			double camX = camera.getPos().x;
 			double camY = camera.getPos().y;
 			double camZ = camera.getPos().z;
-			MatrixStack matrixStack = RenderContext.matrices;
 			matrixStack.push();
 			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
 			matrixStack.multiplyPositionMatrix(new Matrix4f().rotation(camera.getRotation()));
-			matrixStack.scale(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
-//			RenderSystem.enableTexture();
-//			RenderSystem.disableDepthTest();  // visibleThroughObjects
-//			RenderSystem.depthMask(true);
-			matrixStack.scale(-1.0F, 1.0F, 1.0F);
-//			RenderSystem.applyModelViewMatrix();
+			matrixStack.scale(-FONT_SIZE, -FONT_SIZE, 1);
+			RenderSystem.disableDepthTest();  // visibleThroughObjects
 
 			float totalWidth = 0.0F;
 			for (String text: texts)
@@ -237,22 +233,24 @@ public class PistorderDisplay
 			float writtenWidth = 0.0F;
 			for (int i = 0; i < texts.length; i++)
 			{
-				VertexConsumerProvider vertexConsumers = RenderContext.vertexConsumers;
 				float renderX = -totalWidth * 0.5F + writtenWidth;
 				float renderY = client.textRenderer.getWrappedLinesHeight(texts[i], Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
-				client.textRenderer.draw(texts[i], renderX, renderY, colors[i], false, matrixStack.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0xF000F0);
+
+				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+				client.textRenderer.draw(texts[i], renderX, renderY, colors[i], false, matrixStack.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0xF000F0);
+				immediate.draw();
+
 				writtenWidth += client.textRenderer.getWidth(texts[i]);
 			}
 
-//			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-//			RenderSystem.enableDepthTest();
+			RenderSystem.enableDepthTest();
 			matrixStack.pop();
 		}
 	}
 
-	private static void drawString(BlockPos pos, float tickDelta, float line, String text, int color)
+	private static void drawString(MatrixStack matrixStack, BlockPos pos, float tickDelta, float line, String text, int color)
 	{
-		drawString(pos, tickDelta, line, new String[]{text}, new int[]{color});
+		drawString(matrixStack, pos, tickDelta, line, new String[]{text}, new int[]{color});
 	}
 
 	private boolean checkState(World world)
@@ -270,7 +268,7 @@ public class PistorderDisplay
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	void render(float tickDelta)
+	void render(MatrixStack matrixStack, float tickDelta)
 	{
 		if (!this.isDisabled())
 		{
@@ -294,10 +292,10 @@ public class PistorderDisplay
 			String actionResult = this.moveSuccess ? INDICATOR_SUCCESS : INDICATOR_FAIL;
 			int goldValue = Formatting.GOLD.getColorValue();
 
-			drawString(this.pistonPos, tickDelta, -0.5F, String.format("%s %s", I18n.translate(actionKey), actionResult), goldValue);
+			drawString(matrixStack, this.pistonPos, tickDelta, -0.5F, String.format("%s %s", I18n.translate(actionKey), actionResult), goldValue);
 
 			drawString(
-					this.pistonPos, tickDelta, 0.5F,
+					matrixStack, this.pistonPos, tickDelta, 0.5F,
 					new String[]{
 							I18n.translate("pistorder.block_count.pre"),
 							String.valueOf(this.movedBlocks.size()),
@@ -308,16 +306,16 @@ public class PistorderDisplay
 
 			for (int i = 0; i < this.movedBlocks.size(); i++)
 			{
-				drawString(this.movedBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), this.color);
+				drawString(matrixStack, this.movedBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), this.color);
 			}
 			for (int i = 0; i < this.brokenBlocks.size(); i++)
 			{
-				drawString(this.brokenBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), Formatting.RED.getColorValue());
+				drawString(matrixStack, this.brokenBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), Formatting.RED.getColorValue());
 			}
 
 			if (this.immovableBlockPos != null)
 			{
-				drawString(this.immovableBlockPos, tickDelta, 0.0F, "×", Formatting.DARK_RED.getColorValue());
+				drawString(matrixStack, this.immovableBlockPos, tickDelta, 0.0F, "×", Formatting.DARK_RED.getColorValue());
 			}
 		}
 	}

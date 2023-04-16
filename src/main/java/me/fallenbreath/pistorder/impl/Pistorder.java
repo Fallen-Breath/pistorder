@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
@@ -72,12 +73,12 @@ public class Pistorder
 		}
 	}
 
-	public void render(float tickDelta)
+	public void render(MatrixStack matrixStack, float tickDelta)
 	{
 		this.tickKeyBinding();
 		List<Pair<World, BlockPos>> removeList = Lists.newArrayList();
 		this.displayMap.forEach((key, display) -> {
-			display.render(tickDelta);
+			display.render(matrixStack, tickDelta);
 			if (display.isDisabled())
 			{
 				removeList.add(key);
