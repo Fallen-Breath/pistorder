@@ -47,15 +47,43 @@ import net.minecraft.block.AbstractBlock;
 )
 public abstract class AbstractBlockStateMixin
 {
-	@Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
-	private void onPlayerRightClickBlock(World world, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir)
+	@Inject(
+			//#if MC >= 11500
+			method = "onUse",
+			//#else
+			//$$ method = "activate",
+			//#endif
+			at = @At("HEAD"),
+			cancellable = true
+	)
+	private void onPlayerRightClickBlock(
+			World world, PlayerEntity player, Hand hand, BlockHitResult hit,
+			//#if MC >= 11500
+			CallbackInfoReturnable<ActionResult> cir
+			//#else
+			//$$ CallbackInfoReturnable<Boolean> cir
+			//#endif
+	)
 	{
 		if (world.isClient)
 		{
 			ActionResult result = Pistorder.getInstance().onPlayerRightClickBlock(world, player, hand, hit);
-			if (result.isAccepted() && PistorderConfigure.SWING_HAND)
+
+			//#if MC >= 11500
+			boolean ok = result.isAccepted();
+			//#else
+			//$$ boolean ok = result == ActionResult.SUCCESS;
+			//#endif
+
+			if (ok && PistorderConfigure.SWING_HAND)
 			{
-				cir.setReturnValue(result);
+				cir.setReturnValue(
+						//#if MC >= 11500
+						result
+						//#else
+						//$$ true
+						//#endif
+				);
 			}
 		}
 	}
