@@ -44,7 +44,14 @@ public abstract class WorldRendererMixin
 	{
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.push();
-		matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+		matrixStack.multiplyPositionMatrix(
+				matrices.peek().
+						//#if MC >= 11802
+						getPositionMatrix()
+						//#else
+						//$$ getModel()
+						//#endif
+		);
 		RenderSystem.applyModelViewMatrix();
 		Pistorder.getInstance().render(matrixStack, tickDelta);
 		matrixStack.pop();

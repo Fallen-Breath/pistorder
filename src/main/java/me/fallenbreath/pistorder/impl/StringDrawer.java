@@ -41,7 +41,13 @@ public class StringDrawer
 			double camZ = camera.getPos().z;
 			matrixStack.push();
 			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
+
+			//#if MC >= 11802
 			matrixStack.multiplyPositionMatrix(
+			//#else
+			//$$ matrixStack.method_34425(
+			//#endif
+
 					//#if MC >= 11904
 					new Matrix4f().rotation(
 					//#else
