@@ -20,11 +20,49 @@
 
 package me.fallenbreath.pistorder.pushlimit.handlers;
 
-public interface PushLimitHandler
+import java.lang.reflect.Field;
+
+public abstract class BasicStaticFieldRulePushLimitHandler implements PushLimitHandler
 {
-	String getModId();
+	private final Field pushLimitField;
 
-	void setPushLimit(int pushLimit);
+	public BasicStaticFieldRulePushLimitHandler(String className, String fieldName)
+	{
+		try
+		{
+			Class<?> clazz = Class.forName(className);
+			this.pushLimitField = clazz.getField(fieldName);
+			this.pushLimitField.setAccessible(true);
+		}
+		catch (ClassNotFoundException | NoSuchFieldException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 
-	int getPushLimit();
+	@Override
+	public void setPushLimit(int pushLimit)
+	{
+		try
+		{
+			this.pushLimitField.setInt(null, pushLimit);
+		}
+		catch (IllegalAccessException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public int getPushLimit()
+	{
+		try
+		{
+			return this.pushLimitField.getInt(null);
+		}
+		catch (IllegalAccessException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "pistorder",
+  "id": "${id}",
   "version": "${version}",
 
-  "name": "Pistorder",
+  "name": "${name}",
   "description": "A mod that shows the block movement order of a piston",
   "authors": [
     "Fallen_Breath"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/pistorder",
+    "homepage": "https://modrinth.com/mod/pistorder",
     "sources": "https://github.com/Fallen-Breath/pistorder"
   },
 
   "icon": "assets/pistorder/icon.png",
 
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "main": [
     ]
@@ -25,10 +25,7 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.7.1",
-    "minecraft": "1.20.x"
-  },
-  "suggests": {
-    "flamingo": "*"
+    "fabricloader": ">=0.11.4",
+    "minecraft": "${minecraft_dependency}"
   }
 }
