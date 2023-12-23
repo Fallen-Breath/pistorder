@@ -20,20 +20,36 @@
 
 package me.fallenbreath.pistorder;
 
-import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.metadata.ModMetadata;
+
+//#if MC >= 11800
+//$$ import com.mojang.logging.LogUtils;
+//$$ import org.slf4j.Logger;
+//#else
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+//#endif
 
-public class PistorderMod implements ClientModInitializer
+public class PistorderMod implements ModInitializer
 {
-	public static final String MOD_NAME = "Pistorder";
-	public static final String MOD_ID = "pistorder";
+	public static final Logger LOGGER =
+			//#if MC >= 11800
+			//$$ LogUtils.getLogger();
+			//#else
+			LogManager.getLogger();
+			//#endif
 
-	public static final Logger LOGGER = LogManager.getLogger();
+	public static final String MOD_ID = "pistorder";
+	public static String MOD_VERSION = "unknown";
+	public static String MOD_NAME = "unknown";
 
 	@Override
-	public void onInitializeClient()
+	public void onInitialize()
 	{
-		// awa
+		ModMetadata metadata = FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow(RuntimeException::new).getMetadata();
+		MOD_NAME = metadata.getName();
+		MOD_VERSION = metadata.getVersion().getFriendlyString();
 	}
 }
