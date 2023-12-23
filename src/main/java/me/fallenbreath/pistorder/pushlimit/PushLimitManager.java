@@ -21,14 +21,10 @@
 package me.fallenbreath.pistorder.pushlimit;
 
 import com.google.common.collect.Lists;
-import me.fallenbreath.pistorder.pushlimit.handlers.FabricCarpetHandler;
-import me.fallenbreath.pistorder.pushlimit.handlers.PushLimitHandler;
-import me.fallenbreath.pistorder.pushlimit.handlers.QuickCarpetHandler;
-import me.fallenbreath.pistorder.pushlimit.handlers.VanillaHandler;
+import me.fallenbreath.pistorder.pushlimit.handlers.*;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 public class PushLimitManager
 {
@@ -42,23 +38,11 @@ public class PushLimitManager
 		this.oldPushLimit = null;
 
 		// mods that modify the push limit
-		this.addPushLimitHandler(QuickCarpetHandler::new);
-		this.addPushLimitHandler(FabricCarpetHandler::new);
+		this.handlers.add(new QuickCarpetHandler());
+		this.handlers.add(new FabricCarpetHandler());
 
 		// leave the fallback handler to the end
-		this.addPushLimitHandler(VanillaHandler::new);
-	}
-
-	private void addPushLimitHandler(Supplier<PushLimitHandler> handlerSupplier)
-	{
-		try
-		{
-			PushLimitHandler handler = handlerSupplier.get();
-			this.handlers.add(handler);
-		}
-		catch (Throwable ignored)
-		{
-		}
+		this.handlers.add(new VanillaHandler());
 	}
 
 	public static PushLimitManager getInstance()
@@ -83,7 +67,13 @@ public class PushLimitManager
 	{
 		for (PushLimitHandler handler: this.handlers)
 		{
-			return handler.getPushLimit();
+			try
+			{
+				return handler.getPushLimit();
+			}
+			catch (PushLimitOperateException ignored)
+			{
+			}
 		}
 		throw new IllegalStateException("getPushLimit failed");
 	}
@@ -92,8 +82,14 @@ public class PushLimitManager
 	{
 		for (PushLimitHandler handler: this.handlers)
 		{
-			handler.setPushLimit(pushLimit);
-			return;
+			try
+			{
+				handler.setPushLimit(pushLimit);
+				return;
+			}
+			catch (PushLimitOperateException ignored)
+			{
+			}
 		}
 		throw new IllegalStateException("setPushLimit failed");
 	}

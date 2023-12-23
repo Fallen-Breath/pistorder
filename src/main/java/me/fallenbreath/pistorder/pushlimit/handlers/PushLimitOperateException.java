@@ -20,11 +20,10 @@
 
 package me.fallenbreath.pistorder.pushlimit.handlers;
 
-public interface PushLimitHandler
+public class PushLimitOperateException extends Exception
 {
-	String getModId();
-
-	void setPushLimit(int pushLimit) throws PushLimitOperateException;
-
-	int getPushLimit() throws PushLimitOperateException;
+	public PushLimitOperateException(Exception cause)
+	{
+		super(cause);
+	}
 }

@@ -24,45 +24,46 @@ import java.lang.reflect.Field;
 
 public abstract class BasicStaticFieldRulePushLimitHandler implements PushLimitHandler
 {
-	private final Field pushLimitField;
+	private final String className;
+	private final String fieldName;
 
 	public BasicStaticFieldRulePushLimitHandler(String className, String fieldName)
 	{
+		this.className = className;
+		this.fieldName = fieldName;
+	}
+
+	private Field getRuleField() throws ClassNotFoundException, NoSuchFieldException
+	{
+		Class<?> clazz = Class.forName(className);
+		Field field = clazz.getField(fieldName);
+		field.setAccessible(true);
+		return field;
+	}
+
+	@Override
+	public void setPushLimit(int pushLimit) throws PushLimitOperateException
+	{
 		try
 		{
-			Class<?> clazz = Class.forName(className);
-			this.pushLimitField = clazz.getField(fieldName);
-			this.pushLimitField.setAccessible(true);
+			this.getRuleField().setInt(null, pushLimit);
 		}
-		catch (ClassNotFoundException | NoSuchFieldException e)
+		catch (Exception e)
 		{
-			throw new RuntimeException(e);
+			throw new PushLimitOperateException(e);
 		}
 	}
 
 	@Override
-	public void setPushLimit(int pushLimit)
+	public int getPushLimit() throws PushLimitOperateException
 	{
 		try
 		{
-			this.pushLimitField.setInt(null, pushLimit);
+			return this.getRuleField().getInt(null);
 		}
-		catch (IllegalAccessException e)
+		catch (Exception e)
 		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public int getPushLimit()
-	{
-		try
-		{
-			return this.pushLimitField.getInt(null);
-		}
-		catch (IllegalAccessException e)
-		{
-			throw new RuntimeException(e);
+			throw new PushLimitOperateException(e);
 		}
 	}
 }
