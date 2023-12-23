@@ -40,9 +40,15 @@ public abstract class WorldRendererMixin
 	@Inject(
 			method = "render",
 			at = @At(
+					//#if MC >= 11600
 					value = "INVOKE",
 					ordinal = 1,
 					target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/LightmapTextureManager;FDDD)V"
+					//#else
+					//$$ value = "INVOKE_STRING",
+					//$$ args = "ldc=weather",
+					//$$ target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V"
+					//#endif
 			)
 	)
 	private void renderPistorder(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci)

@@ -22,7 +22,6 @@ package me.fallenbreath.pistorder.mixins;
 
 import me.fallenbreath.pistorder.impl.Pistorder;
 import me.fallenbreath.pistorder.utils.PistorderConfigure;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -33,7 +32,19 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(AbstractBlock.AbstractBlockState.class)
+//#if MC >= 11600
+import net.minecraft.block.AbstractBlock;
+//#else
+//$$ import net.minecraft.block.BlockState;
+//#endif
+
+@Mixin(
+		//#if MC >= 11600
+		AbstractBlock.AbstractBlockState.class
+		//#else
+		//$$ BlockState.class
+		//#endif
+)
 public abstract class AbstractBlockStateMixin
 {
 	@Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
