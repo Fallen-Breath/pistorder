@@ -24,7 +24,7 @@ preprocess {
 	mc115.link(mc116, null)
 	mc116.link(mc117, null)
 	mc117.link(mc118, null)
-	mc118.link(mc119, null)
+	mc118.link(mc119, file('versions/mapping-1.18-1.19.txt'))
 	mc119.link(mc120, null)
 }
 

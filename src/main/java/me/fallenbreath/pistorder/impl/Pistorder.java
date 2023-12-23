@@ -32,7 +32,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -42,6 +41,12 @@ import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.Map;
+
+//#if MC >= 11900
+import net.minecraft.text.Text;
+//#else
+//$$ import net.minecraft.text.TranslatableText;
+//#endif
 
 public class Pistorder
 {
@@ -111,7 +116,16 @@ public class Pistorder
 	{
 		if (PistorderKeyBinding.CLEAR_DISPLAY_KEY.wasPressed())
 		{
-			MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.translatable("pistorder.clear_display.hint"), false);
+			MinecraftClient.getInstance().inGameHud.setOverlayMessage(
+					//#if MC >= 11904
+					Text.translatable(
+					//#else
+					//$$ new TranslatableText(
+					//#endif
+							"pistorder.clear_display.hint"
+					),
+					false
+			);
 			this.displayMap.clear();
 		}
 	}
