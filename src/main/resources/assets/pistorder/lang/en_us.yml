@@ -1,0 +1,7 @@
+pistorder:
+  push: Push
+  retract: Retract
+  block_count.pre: ''
+  block_count.post: ' blocks'
+  clear_display: Clear Pistorder display
+  clear_display.hint: Pistorder information display cleared

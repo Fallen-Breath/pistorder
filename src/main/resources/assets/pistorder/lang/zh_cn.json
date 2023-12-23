@@ -1,8 +1,0 @@
-{
-  "pistorder.push": "推动",
-  "pistorder.retract": "拉回",
-  "pistorder.block_count.pre": "",
-  "pistorder.block_count.post": "个方块",
-  "pistorder.clear_display": "清空 Pistorder 显示",
-  "pistorder.clear_display.hint": " Pistorder 信息显示已清空"
-}

@@ -1,0 +1,7 @@
+pistorder:
+  push: 推动
+  retract: 拉回
+  block_count.pre: ''
+  block_count.post: 个方块
+  clear_display: 清空 Pistorder 显示
+  clear_display.hint: Pistorder 信息显示已清空
