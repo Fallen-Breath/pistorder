@@ -155,22 +155,20 @@ public class StringDrawer
 
 				//#endif  // if MC >= 11500
 
+				//#if MC >= 11500
 				client.textRenderer.draw(
-						texts[i], renderX, renderY, colors[i]
-
-						//#if MC >= 11500
-
-						, false, positionMatrix, immediate,
+						texts[i], renderX, renderY, colors[i],
+						false, positionMatrix, immediate,
 						//#if MC >= 11904
 						TextRenderer.TextLayerType.SEE_THROUGH,
 						//#else
 						//$$ true,
 						//#endif
 						0, 0xF000F0
-
-						//#endif  // if MC >= 11500
-
 				);
+				//#else
+				//$$ client.textRenderer.draw(texts[i], renderX, renderY, colors[i]);
+				//#endif
 
 				//#if MC >= 11500
 				immediate.draw();
