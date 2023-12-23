@@ -23,6 +23,9 @@ public class StringDrawer
 	/**
 	 * Stolen from {@link DebugRenderer#drawString(MatrixStack, VertexConsumerProvider, String, double, double, double, int, float, boolean, float, boolean)}
 	 */
+	//#if MC < 11701
+	//$$ @SuppressWarnings("deprecation")
+	//#endif
 	public static void drawString(MatrixStack matrixStack, BlockPos pos, float tickDelta, float line, String[] texts, int[] colors)
 	{
 		MinecraftClient client = MinecraftClient.getInstance();
@@ -39,10 +42,13 @@ public class StringDrawer
 			double camX = camera.getPos().x;
 			double camY = camera.getPos().y;
 			double camZ = camera.getPos().z;
+
+			//#if MC >= 11701
 			matrixStack.push();
 			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
 
 			//#if MC >= 11802
+
 			matrixStack.multiplyPositionMatrix(
 			//#else
 			//$$ matrixStack.method_34425(
@@ -65,6 +71,19 @@ public class StringDrawer
 			//$$ RenderSystem.depthMask(true);
 			//$$ RenderSystem.applyModelViewMatrix();
 			//#endif
+
+			//#else  // if MC >= 11802
+			//$$
+			//$$ RenderSystem.pushMatrix();
+			//$$ RenderSystem.translatef((float)(x - camX), (float)(y - camY), (float)(z - camZ));
+			//$$ RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
+			//$$ RenderSystem.multMatrix(new Matrix4f(camera.getRotation()));
+			//$$ RenderSystem.scalef(-FONT_SIZE, -FONT_SIZE, 1);
+			//$$ RenderSystem.enableTexture();
+			//$$ RenderSystem.disableDepthTest();  // visibleThroughObjects
+			//$$ RenderSystem.depthMask(true);
+			//$$ RenderSystem.enableAlphaTest();
+			//#endif  // if MC >= 11802
 
 			float totalWidth = 0.0F;
 			for (String text: texts)
@@ -98,12 +117,21 @@ public class StringDrawer
 				writtenWidth += client.textRenderer.getWidth(texts[i]);
 			}
 
+			//#if MC >= 11802
+
 			//#if MC < 11904
 			//$$ RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			//#endif
 
 			RenderSystem.enableDepthTest();
 			matrixStack.pop();
+
+			//#else  // if MC >= 11802
+			//$$
+			//$$ RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			//$$ RenderSystem.enableDepthTest();
+			//$$ RenderSystem.popMatrix();
+			//#endif  // if MC >= 11802
 		}
 	}
 }
