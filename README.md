@@ -30,13 +30,13 @@ It will assume the piston is interacting with the block and show the related pus
 
 Press the clear hot key (default `p`) to remove all information display manually
 
+![screenshot](https://raw.githubusercontent.com/Fallen-Breath/pistorder/master/screenshot.png)
+
 ## Requirements
 
 It's a client side only mod, no need to be installed on the server side
 
 It requires no extra mod as dependency
-
-![screenshot](https://raw.githubusercontent.com/Fallen-Breath/pistorder/1.15.2-fabric/screenshot.png)
 
 ## Compatibility
 
