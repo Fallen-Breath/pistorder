@@ -8,7 +8,9 @@
 
 A mod that shows the block movement order of a piston. Thanks [CarpetClient](https://github.com/X-com/CarpetClient) for the idea of such a cool tool
 
-Right click a piston base block with an empty hand to show what will happen when a piston pushes / retracts
+## Usage
+
+Right-click a piston base block with an empty hand to show what will happen when the piston pushes / retracts
 
 Nothing will happen if you are sneaking when clicking
 
@@ -23,12 +25,22 @@ Information will still be displayed if the piston fails to push / retract, but i
 
 Click the piston again to hide the information display. Information displays will also be removed after a dimension change 
 
-If there is an air gap between the piston and a block, clicking again will switch into indirect mode. It will assume the piston is interacting with the block and show the related push / retract information
+If there is an air gap between the piston and a block, clicking again will switch into indirect mode. 
+It will assume the piston is interacting with the block and show the related push / retract information
 
 Press the clear hot key (default `p`) to remove all information display manually
 
-For mods that modifies the piston push limit, it's currently compatible with [Fabric Carpet](https://github.com/gnembon/fabric-carpet) and [Quick Carpet](https://github.com/DeadlyMC/QuickCarpet114)
+## Requirements
 
 It's a client side only mod, no need to be installed on the server side
 
+It requires no extra mod as dependency
+
 ![screenshot](https://raw.githubusercontent.com/Fallen-Breath/pistorder/1.15.2-fabric/screenshot.png)
+
+## Compatibility
+
+For mods that modifies the piston push limit, it's currently compatible with [Fabric Carpet](https://github.com/gnembon/fabric-carpet) and [Quick Carpet](https://github.com/DeadlyMC/QuickCarpet114)
+
+Mod [TweakerMore](https://github.com/Fallen-Breath/tweakermore) >= `3.16.0` implements the same functionality of this mod and provides more features.
+Using TweakerMore and enabling its `pistorder` option will disable this mod

@@ -59,8 +59,19 @@ public class Pistorder
 		return INSTANCE;
 	}
 
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+	public boolean isEnabled()
+	{
+		return !TweakerMoreCompact.isTweakerMoreVersionEnabled();
+	}
+
 	public ActionResult onPlayerRightClickBlock(World world, PlayerEntity player, Hand hand, BlockHitResult hit)
 	{
+		if (!this.isEnabled())
+		{
+			return ActionResult.FAIL;
+		}
+
 		// click with empty main hand, not sneaking
 		if (hand == Hand.MAIN_HAND && player.getMainHandStack().isEmpty() && !player.isSneaking())
 		{
@@ -100,6 +111,12 @@ public class Pistorder
 
 	public void render(MatrixStack matrixStack, float tickDelta)
 	{
+		if (!this.isEnabled())
+		{
+			this.displayMap.clear();
+			return;
+		}
+
 		this.tickKeyBinding();
 		List<Pair<World, BlockPos>> removeList = Lists.newArrayList();
 		this.displayMap.forEach((key, display) -> {
