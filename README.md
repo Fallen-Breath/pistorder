@@ -1,6 +1,6 @@
 ## Pistorder
 
-[![License](https://img.shields.io/github/license/Fallen-Breath/pistorder.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
+[![License](https://img.shields.io/github/license/Fallen-Breath/pistorder.svg)](http://www.gnu.org/licenses/lgpl-3.0.html)
 [![Issues](https://img.shields.io/github/issues/Fallen-Breath/pistorder.svg)](https://github.com/Fallen-Breath/pistorder/issues)
 [![MC Versions](http://cf.way2muchnoise.eu/versions/For%20MC_pistorder_all.svg)](https://legacy.curseforge.com/minecraft/mc-mods/pistorder)
 [![CurseForge](http://cf.way2muchnoise.eu/full_pistorder_downloads.svg)](https://legacy.curseforge.com/minecraft/mc-mods/pistorder)
