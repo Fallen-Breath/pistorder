@@ -46,7 +46,7 @@ public abstract class WorldRendererMixin
 		matrixStack.push();
 		matrixStack.multiplyPositionMatrix(
 				matrices.peek().
-						//#if MC >= 11802
+						//#if MC >= 11800
 						getPositionMatrix()
 						//#else
 						//$$ getModel()

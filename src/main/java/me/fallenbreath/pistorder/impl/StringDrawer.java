@@ -50,7 +50,7 @@ public class StringDrawer
 	/**
 	 * Stolen from {@link DebugRenderer#drawString(MatrixStack, VertexConsumerProvider, String, double, double, double, int, float, boolean, float, boolean)}
 	 */
-	//#if 11600 <= MC && MC < 11701
+	//#if 11600 <= MC && MC < 11700
 	//$$ @SuppressWarnings("deprecation")
 	//#endif
 	public static void drawString(MatrixStack matrixStack, BlockPos pos, float tickDelta, float line, String[] texts, int[] colors)
@@ -72,11 +72,11 @@ public class StringDrawer
 
 			// ========================== Prepare Matrix start ==========================
 
-			//#if MC >= 11701
+			//#if MC >= 11700
 			matrixStack.push();
 			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
 
-			//#if MC >= 11802
+			//#if MC >= 11800
 
 			matrixStack.multiplyPositionMatrix(
 			//#else
@@ -102,7 +102,7 @@ public class StringDrawer
 			//#endif
 
 			//#elseif MC >= 11500
-			//$$ // if MC >= 11802
+			//$$ // if MC >= 11800
 			//$$
 			//$$ RenderSystem.pushMatrix();
 			//$$ RenderSystem.translatef((float)(x - camX), (float)(y - camY), (float)(z - camZ));
@@ -179,7 +179,7 @@ public class StringDrawer
 
 			// ========================== Restore Matrix start ==========================
 
-			//#if MC >= 11701
+			//#if MC >= 11700
 
 			//#if MC < 11904
 			//$$ RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -189,7 +189,7 @@ public class StringDrawer
 			matrixStack.pop();
 
 			//#elseif MC >= 11500
-			//$$ // if MC >= 11802
+			//$$ // if MC >= 11800
 			//$$
 			//$$ RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			//$$ RenderSystem.enableDepthTest();
