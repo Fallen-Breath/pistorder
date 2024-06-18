@@ -29,6 +29,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+//#if MC >= 12100
+//$$ import net.minecraft.client.render.RenderTickCounter;
+//#endif
+
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererMixin
 {
@@ -46,8 +50,22 @@ public abstract class WorldRendererMixin
 					argsOnly = true
 					//#endif
 			) MatrixStack matrices,
-			@Local(argsOnly = true) float tickDelta)
+
+			@Local(argsOnly = true)
+			//#if MC >= 12100
+			//$$ RenderTickCounter tickCounter
+			//#else
+			float tickDelta
+			//#endif
+	)
 	{
-		Pistorder.getInstance().render(matrices, tickDelta);
+		Pistorder.getInstance().render(
+				matrices,
+				//#if MC >= 12100
+				//$$ tickCounter.getTickDelta(false)
+				//#else
+				tickDelta
+				//#endif
+		);
 	}
 }

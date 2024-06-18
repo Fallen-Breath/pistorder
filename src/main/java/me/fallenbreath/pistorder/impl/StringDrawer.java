@@ -20,7 +20,6 @@
 
 package me.fallenbreath.pistorder.impl;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.debug.DebugRenderer;
@@ -46,6 +45,17 @@ public class StringDrawer
 {
 	private static final double MAX_RENDER_DISTANCE = 256.0D;
 	private static final float FONT_SIZE = 0.025F;
+
+	//#if MC >= 11500
+	private static VertexConsumerProvider.Immediate getVertexConsumer()
+	{
+		//#if MC >= 12100
+		//$$ return MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+		//#else
+		return VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+		//#endif
+	}
+	//#endif
 
 	/**
 	 * Stolen from {@link DebugRenderer#drawString(MatrixStack, VertexConsumerProvider, String, double, double, double, int, float, boolean, float, boolean)}
@@ -91,7 +101,15 @@ public class StringDrawer
 							camera.getRotation()
 					)
 			);
-			matrixStack.scale(-FONT_SIZE, -FONT_SIZE, 1);
+			matrixStack.scale(
+					//#if MC >= 12100
+					//$$ FONT_SIZE,
+					//#else
+					-FONT_SIZE,
+					//#endif
+					-FONT_SIZE,
+					1
+			);
 			//#if MC < 11904
 			//$$ RenderSystem.enableTexture();
 			//#endif
@@ -145,8 +163,6 @@ public class StringDrawer
 				float renderY = client.textRenderer.getWrappedLinesHeight(texts[i], Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
 
 				//#if MC >= 11500
-
-				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 				//#if MC >= 11904
 				Matrix4f positionMatrix = matrixStack.peek().getPositionMatrix();
 				//#else
@@ -156,6 +172,7 @@ public class StringDrawer
 				//#endif  // if MC >= 11500
 
 				//#if MC >= 11500
+				VertexConsumerProvider.Immediate immediate = getVertexConsumer();
 				client.textRenderer.draw(
 						texts[i], renderX, renderY, colors[i],
 						false, positionMatrix, immediate,
@@ -166,12 +183,9 @@ public class StringDrawer
 						//#endif
 						0, 0xF000F0
 				);
+				immediate.draw();
 				//#else
 				//$$ client.textRenderer.draw(texts[i], renderX, renderY, colors[i]);
-				//#endif
-
-				//#if MC >= 11500
-				immediate.draw();
 				//#endif
 
 				writtenWidth += client.textRenderer.getWidth(texts[i]);
