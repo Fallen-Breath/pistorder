@@ -1,14 +1,14 @@
 plugins {
 	id 'maven-publish'
 	id 'com.github.hierynomus.license' version '0.16.1' apply false
-	id 'fabric-loom' version '1.7-SNAPSHOT' apply false
+	id 'fabric-loom' version '1.8-SNAPSHOT' apply false
 
 	// https://github.com/ReplayMod/preprocessor
 	// https://github.com/Fallen-Breath/preprocessor
 	id 'com.replaymod.preprocess' version 'ce1aeb2b'
 
 	// https://github.com/Fallen-Breath/yamlang
-	id 'me.fallenbreath.yamlang' version '1.3.1' apply false
+	id 'me.fallenbreath.yamlang' version '1.4.0' apply false
 }
 
 preprocess {
@@ -22,7 +22,8 @@ preprocess {
 	def mc1202 = createNode('1.20.2'  , 1_20_02, '')
 	def mc1204 = createNode('1.20.4'  , 1_20_04, '')
 	def mc1206 = createNode('1.20.6'  , 1_20_06, '')
-    def mc121  = createNode('1.21'    , 1_21_00, '')
+    def mc1211 = createNode('1.21.1'  , 1_21_01, '')
+    def mc1212 = createNode('1.21.2'  , 1_21_02, '')
 
 	mc114.link(mc115, file('versions/mapping-1.14-1.15.txt'))
 	mc115.link(mc116, null)
@@ -33,7 +34,8 @@ preprocess {
 	mc1201.link(mc1202, null)
 	mc1202.link(mc1204, null)
 	mc1204.link(mc1206, null)
-    mc1206.link(mc121, null)
+    mc1206.link(mc1211, null)
+    mc1211.link(mc1212, null)
 }
 
 tasks.register('buildAndGather') {
