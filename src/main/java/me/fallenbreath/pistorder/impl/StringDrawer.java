@@ -26,6 +26,10 @@ import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 
+//#if MC >= 12105
+//$$ import com.mojang.blaze3d.opengl.GlStateManager;
+//#endif
+
 //#if MC >= 11500
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.font.TextRenderer;
@@ -113,7 +117,14 @@ public class StringDrawer
 			//#if MC < 11904
 			//$$ RenderSystem.enableTexture();
 			//#endif
-			RenderSystem.disableDepthTest();  // visibleThroughObjects
+
+			// visibleThroughObjects
+			//#if MC >= 12105
+			//$$ GlStateManager._disableDepthTest();
+			//#else
+			RenderSystem.disableDepthTest();
+			//#endif
+
 			//#if MC < 11904
 			//$$ RenderSystem.depthMask(true);
 			//$$ RenderSystem.applyModelViewMatrix();
@@ -199,7 +210,12 @@ public class StringDrawer
 			//$$ RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			//#endif
 
+			//#if MC >= 12105
+			//$$ GlStateManager._enableDepthTest();
+			//#else
 			RenderSystem.enableDepthTest();
+			//#endif
+
 			matrixStack.pop();
 
 			//#elseif MC >= 11500
