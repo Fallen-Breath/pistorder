@@ -185,7 +185,7 @@ public class StringDrawer
 				//#if MC >= 11500
 				VertexConsumerProvider.Immediate immediate = getVertexConsumer();
 				client.textRenderer.draw(
-						texts[i], renderX, renderY, colors[i],
+						texts[i], renderX, renderY, colors[i] | (0xFF << 24),
 						false, positionMatrix, immediate,
 						//#if MC >= 11904
 						TextRenderer.TextLayerType.SEE_THROUGH,
