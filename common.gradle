@@ -37,7 +37,14 @@ dependencies {
 		// ships MixinExtras only but not implementation it, cuz the dev env already has MixinExtras (from fabric loader 0.15.1+)
 		include("com.github.LlamaLad7:MixinExtras:${project.mixinextras_version}")
 	}
-	include(modImplementation(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
+
+	def fabricApiModules = ["fabric-resource-loader-v0"]
+	if (mcVersion >= 12105) {  // "fabric-resource-loader-v0" dependency since fabric api 0.127.0
+		fabricApiModules.add("fabric-api-base")
+	}
+	fabricApiModules.forEach {
+		include(modImplementation(fabricApi.module(it, project.fabric_api_version)))
+	}
 }
 
 String MIXIN_CONFIG_PATH = 'pistorder.mixins.json'
