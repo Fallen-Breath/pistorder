@@ -33,8 +33,8 @@ dependencies {
 	modRuntimeOnly 'me.fallenbreath:mixin-auditor:0.1.0'
 
 	// dependencies
-	if (mcVersion < 12100) {
-		// ships MixinExtras only but not implementation it, cuz the dev env already has MixinExtras (from fabric loader 0.15+)
+	if (mcVersion < 12005) {
+		// ships MixinExtras only but not implementation it, cuz the dev env already has MixinExtras (from fabric loader 0.15.1+)
 		include("com.github.LlamaLad7:MixinExtras:${project.mixinextras_version}")
 	}
 	include(modImplementation(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
