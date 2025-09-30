@@ -33,10 +33,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class WorldRendererMixin
 {
 	@Inject(
+			//#if MC >= 1.21.9
+			//$$ method = "method_72915",  // lambda method in renderLateDebug
+			//#else
 			method = "method_62212",  // lambda method in renderLateDebug
+			//#endif
 			at = @At(
 					value = "INVOKE",
+					//#if MC >= 1.21.9
+					//$$ target = "Lnet/minecraft/client/render/debug/DebugRenderer;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/Frustum;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;DDDZ)V"
+					//#else
 					target = "Lnet/minecraft/client/render/debug/DebugRenderer;renderLate(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;DDD)V"
+					//#endif
 			)
 	)
 	private void renderPistorder(

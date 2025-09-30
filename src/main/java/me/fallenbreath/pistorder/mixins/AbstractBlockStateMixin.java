@@ -70,7 +70,7 @@ public abstract class AbstractBlockStateMixin
 			//#endif
 	)
 	{
-		if (world.isClient)
+		if (world.isClient())
 		{
 			ActionResult result = Pistorder.getInstance().
 					//#if MC >= 12005

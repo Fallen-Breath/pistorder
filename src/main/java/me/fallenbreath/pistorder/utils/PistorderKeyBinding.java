@@ -28,7 +28,15 @@ import java.util.List;
 
 public class PistorderKeyBinding
 {
-	public static final KeyBinding CLEAR_DISPLAY_KEY = new KeyBinding("pistorder.clear_display", InputUtil.fromTranslationKey("key.keyboard.p").getCode(), "key.categories.misc");
+	public static final KeyBinding CLEAR_DISPLAY_KEY = new KeyBinding(
+			"pistorder.clear_display",
+			InputUtil.fromTranslationKey("key.keyboard.p").getCode(),
+			//#if MC >= 1.21.9
+			//$$ KeyBinding.Category.MISC
+			//#else
+			"key.categories.misc"
+			//#endif
+	);
 
 	public static KeyBinding[] updateVanillaKeyBinding(KeyBinding[] keysAll)
 	{
