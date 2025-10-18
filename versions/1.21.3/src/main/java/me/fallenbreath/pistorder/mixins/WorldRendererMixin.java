@@ -33,10 +33,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class WorldRendererMixin
 {
 	@Inject(
+			// lambda method in renderLateDebug
 			//#if MC >= 1.21.9
-			//$$ method = "method_72915",  // lambda method in renderLateDebug
+			//$$ method = "method_72915",
 			//#else
-			method = "method_62212",  // lambda method in renderLateDebug
+			method = "method_62212",
 			//#endif
 			at = @At(
 					value = "INVOKE",
