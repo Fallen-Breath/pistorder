@@ -45,7 +45,7 @@ dependencies {
 	}
 
 	if (mcVersion < 12005) {
-		include("io.github.llamalad7:mixinextras-fabric:${project.mixinextras_version}")
+		include("com.github.LlamaLad7:MixinExtras:${project.mixinextras_version}")
 	}
 }
 
