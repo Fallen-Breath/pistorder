@@ -22,37 +22,37 @@ package me.fallenbreath.pistorder.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.utils.PistorderKeyBinding;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.PistonBlock;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.piston.PistonBaseBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.List;
 import java.util.Map;
 
 //#if MC >= 11900
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 //#else
-//$$ import net.minecraft.text.TranslatableText;
+//$$ import net.minecraft.network.chat.TranslatableComponent;
 //#endif
 
 public class Pistorder
 {
 	private static final Pistorder INSTANCE = new Pistorder();
 
-	private final Map<Pair<World, BlockPos>, PistorderDisplay> displayMap = Maps.newHashMap();
+	private final Map<Pair<Level, BlockPos>, PistorderDisplay> displayMap = Maps.newHashMap();
 
 	public static Pistorder getInstance()
 	{
@@ -65,50 +65,50 @@ public class Pistorder
 		return !TweakerMoreCompact.isTweakerMoreVersionEnabled();
 	}
 
-	public ActionResult onPlayerRightClickBlock(World world, PlayerEntity player, Hand hand, BlockHitResult hit)
+	public InteractionResult onPlayerRightClickBlock(Level world, Player player, InteractionHand hand, BlockHitResult hit)
 	{
 		if (!this.isEnabled())
 		{
-			return ActionResult.FAIL;
+			return InteractionResult.FAIL;
 		}
 
 		// click with empty main hand, not sneaking
-		if (hand == Hand.MAIN_HAND)
+		if (hand == InteractionHand.MAIN_HAND)
 		{
 			return this.onPlayerRightClickBlockWithMainHand(world, player, hit);
 		}
-		return ActionResult.FAIL;
+		return InteractionResult.FAIL;
 	}
 
-	public ActionResult onPlayerRightClickBlockWithMainHand(World world, PlayerEntity player, BlockHitResult hit)
+	public InteractionResult onPlayerRightClickBlockWithMainHand(Level world, Player player, BlockHitResult hit)
 	{
 		if (!this.isEnabled())
 		{
-			return ActionResult.FAIL;
+			return InteractionResult.FAIL;
 		}
 
-		if (player.getMainHandStack().isEmpty() && !player.isSneaking())
+		if (player.getMainHandItem().isEmpty() && !player.isShiftKeyDown())
 		{
 			BlockPos pos = hit.getBlockPos();
 			BlockState blockState = world.getBlockState(pos);
 			Block block = blockState.getBlock();
-			if (block instanceof PistonBlock)
+			if (block instanceof PistonBaseBlock)
 			{
-				boolean extended = blockState.get(PistonBlock.EXTENDED);
+				boolean extended = blockState.getValue(PistonBaseBlock.EXTENDED);
 				if (!extended || ((PistonBlockAccessor)block).getIsSticky())
 				{
-					this.click(world, pos, blockState, blockState.get(Properties.FACING), extended ? PistonActionType.RETRACT : PistonActionType.PUSH);
-					return ActionResult.SUCCESS;
+					this.click(world, pos, blockState, blockState.getValue(BlockStateProperties.FACING), extended ? PistonActionType.RETRACT : PistonActionType.PUSH);
+					return InteractionResult.SUCCESS;
 				}
 			}
 		}
 
-		return ActionResult.FAIL;
+		return InteractionResult.FAIL;
 	}
 
-	synchronized private void click(World world, BlockPos pos, BlockState blockState, Direction pistonFacing, PistonActionType PistonActionType)
+	synchronized private void click(Level world, BlockPos pos, BlockState blockState, Direction pistonFacing, PistonActionType PistonActionType)
 	{
-		Pair<World, BlockPos> key = Pair.of(world, pos);
+		Pair<Level, BlockPos> key = Pair.of(world, pos);
 		PistorderDisplay display = this.displayMap.get(key);
 		if (display == null)
 		{
@@ -124,7 +124,7 @@ public class Pistorder
 		}
 	}
 
-	public void render(MatrixStack matrixStack, float tickDelta)
+	public void render(PoseStack matrixStack, float tickDelta)
 	{
 		if (!this.isEnabled())
 		{
@@ -133,7 +133,7 @@ public class Pistorder
 		}
 
 		this.tickKeyBinding();
-		List<Pair<World, BlockPos>> removeList = Lists.newArrayList();
+		List<Pair<Level, BlockPos>> removeList = Lists.newArrayList();
 		this.displayMap.forEach((key, display) -> {
 			display.render(matrixStack, tickDelta);
 			if (display.isDisabled())
@@ -146,13 +146,13 @@ public class Pistorder
 
 	private void tickKeyBinding()
 	{
-		if (PistorderKeyBinding.CLEAR_DISPLAY_KEY.wasPressed())
+		if (PistorderKeyBinding.CLEAR_DISPLAY_KEY.consumeClick())
 		{
-			MinecraftClient.getInstance().inGameHud.setOverlayMessage(
+			Minecraft.getInstance().gui.setOverlayMessage(
 					//#if MC >= 11904
-					Text.translatable(
+					Component.translatable(
 					//#else
-					//$$ new TranslatableText(
+					//$$ new TranslatableComponent(
 					//#endif
 							"pistorder.clear_display.hint"
 					),

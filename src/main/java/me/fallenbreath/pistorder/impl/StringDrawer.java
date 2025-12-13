@@ -20,11 +20,15 @@
 
 package me.fallenbreath.pistorder.impl;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.debug.DebugRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.BlockPos;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.debug.DebugRenderer;
+import net.minecraft.core.BlockPos;
+
+//#if MC >= 1.21.11
+//$$ import net.minecraft.network.chat.FormattedText;
+//#endif
 
 //#if MC >= 12105
 //$$ import com.mojang.blaze3d.opengl.GlStateManager;
@@ -32,17 +36,17 @@ import net.minecraft.util.math.BlockPos;
 
 //#if MC >= 11500
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
 import org.joml.Matrix4f;
 //#if MC < 11904
-//$$ import net.minecraft.util.math.AffineTransformation;
+//$$ import com.mojang.math.Transformation;
 //#endif
 
 //#else  // if MC >= 11500
 //$$ import com.mojang.blaze3d.platform.GlStateManager;
-//$$ import net.minecraft.client.render.entity.EntityRenderDispatcher;
+//$$ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 //#endif
 
 public class StringDrawer
@@ -51,58 +55,52 @@ public class StringDrawer
 	private static final float FONT_SIZE = 0.025F;
 
 	//#if MC >= 11500
-	private static VertexConsumerProvider.Immediate getVertexConsumer()
+	private static MultiBufferSource.BufferSource getVertexConsumer()
 	{
 		//#if MC >= 12100
-		//$$ return MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+		//$$ return Minecraft.getInstance().renderBuffers().bufferSource();
 		//#else
-		return VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+		return MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 		//#endif
 	}
 	//#endif
 
 	/**
-	 * Stolen from {@link DebugRenderer#drawString(MatrixStack, VertexConsumerProvider, String, double, double, double, int, float, boolean, float, boolean)}
+	 * Stolen from {@link DebugRenderer#renderFloatingText(PoseStack, MultiBufferSource, String, double, double, double, int, float, boolean, float, boolean)}
 	 */
 	//#if 11600 <= MC && MC < 11700
 	//$$ @SuppressWarnings("deprecation")
 	//#endif
-	public static void drawString(MatrixStack matrixStack, BlockPos pos, float tickDelta, float line, String[] texts, int[] colors)
+	public static void drawString(PoseStack matrixStack, BlockPos pos, float tickDelta, float line, String[] texts, int[] colors)
 	{
-		MinecraftClient client = MinecraftClient.getInstance();
-		Camera camera = client.gameRenderer.getCamera();
-		if (camera.isReady() && client.getEntityRenderDispatcher().gameOptions != null && client.player != null)
+		Minecraft client = Minecraft.getInstance();
+		Camera camera = client.gameRenderer.getMainCamera();
+		if (camera.isInitialized() && client.getEntityRenderDispatcher().options != null && client.player != null)
 		{
 			double x = (double)pos.getX() + 0.5D;
 			double y = (double)pos.getY() + 0.5D;
 			double z = (double)pos.getZ() + 0.5D;
-			if (client.player.squaredDistanceTo(x, y, z) > MAX_RENDER_DISTANCE * MAX_RENDER_DISTANCE)
+			if (client.player.distanceToSqr(x, y, z) > MAX_RENDER_DISTANCE * MAX_RENDER_DISTANCE)
 			{
 				return;
 			}
-			double camX = camera.getPos().x;
-			double camY = camera.getPos().y;
-			double camZ = camera.getPos().z;
+			double camX = camera.getPosition().x;
+			double camY = camera.getPosition().y;
+			double camZ = camera.getPosition().z;
 
 			// ========================== Prepare Matrix start ==========================
 
 			//#if MC >= 11700
-			matrixStack.push();
+			matrixStack.pushPose();
 			matrixStack.translate((float)(x - camX), (float)(y - camY), (float)(z - camZ));
 
-			//#if MC >= 11800
-
-			matrixStack.multiplyPositionMatrix(
-			//#else
-			//$$ matrixStack.method_34425(
-			//#endif
-
+			matrixStack.mulPoseMatrix(
 					//#if MC >= 11904
 					new Matrix4f().rotation(
 					//#else
 					//$$ new Matrix4f(
 					//#endif
-							camera.getRotation()
+							camera.rotation()
 					)
 			);
 			matrixStack.scale(
@@ -136,7 +134,7 @@ public class StringDrawer
 			//$$ RenderSystem.pushMatrix();
 			//$$ RenderSystem.translatef((float)(x - camX), (float)(y - camY), (float)(z - camZ));
 			//$$ RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
-			//$$ RenderSystem.multMatrix(new Matrix4f(camera.getRotation()));
+			//$$ RenderSystem.multMatrix(new Matrix4f(camera.rotation()));
 			//$$ RenderSystem.scalef(-FONT_SIZE, -FONT_SIZE, 1);
 			//$$ RenderSystem.enableTexture();
 			//$$ RenderSystem.disableDepthTest();  // visibleThroughObjects
@@ -149,9 +147,9 @@ public class StringDrawer
 			//$$ GlStateManager.translatef((float)(x - camX), (float)(y - camY), (float)(z - camZ));
 			//$$ GlStateManager.normal3f(0.0F, 1.0F, 0.0F);
 			//$$ GlStateManager.scalef(FONT_SIZE, -FONT_SIZE, FONT_SIZE);
-			//$$ EntityRenderDispatcher entityRenderDispatcher = client.getEntityRenderManager();
-			//$$ GlStateManager.rotatef(-entityRenderDispatcher.cameraYaw, 0.0F, 1.0F, 0.0F);
-			//$$ GlStateManager.rotatef(-entityRenderDispatcher.cameraPitch, 1.0F, 0.0F, 0.0F);
+			//$$ EntityRenderDispatcher entityRenderDispatcher = client.getEntityRenderDispatcher();
+			//$$ GlStateManager.rotatef(-entityRenderDispatcher.playerRotY, 0.0F, 1.0F, 0.0F);
+			//$$ GlStateManager.rotatef(-entityRenderDispatcher.playerRotX, 1.0F, 0.0F, 0.0F);
 			//$$ GlStateManager.enableTexture();
 			//$$ GlStateManager.disableDepthTest();  // visibleThroughObjects
 			//$$ GlStateManager.depthMask(true);
@@ -164,42 +162,49 @@ public class StringDrawer
 			float totalWidth = 0.0F;
 			for (String text: texts)
 			{
-				totalWidth += client.textRenderer.getWidth(text);
+				totalWidth += client.font.width(text);
 			}
 
 			float writtenWidth = 0.0F;
 			for (int i = 0; i < texts.length; i++)
 			{
 				float renderX = -totalWidth * 0.5F + writtenWidth;
-				float renderY = client.textRenderer.getWrappedLinesHeight(texts[i], Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
+				float renderY = client.font.wordWrapHeight(
+						//#if MC >= 1.21.11
+						//$$ FormattedText.of(texts[i]),
+						//#else
+						texts[i],
+						//#endif
+						Integer.MAX_VALUE
+				) * (-0.5F + 1.25F * line);
 
 				//#if MC >= 11500
 				//#if MC >= 11904
-				Matrix4f positionMatrix = matrixStack.peek().getPositionMatrix();
+				Matrix4f positionMatrix = matrixStack.last().pose();
 				//#else
-				//$$ Matrix4f positionMatrix = AffineTransformation.identity().getMatrix();
+				//$$ Matrix4f positionMatrix = Transformation.identity().getMatrix();
 				//#endif
 
 				//#endif  // if MC >= 11500
 
 				//#if MC >= 11500
-				VertexConsumerProvider.Immediate immediate = getVertexConsumer();
-				client.textRenderer.draw(
+				MultiBufferSource.BufferSource immediate = getVertexConsumer();
+				client.font.drawInBatch(
 						texts[i], renderX, renderY, colors[i] | (0xFF << 24),
 						false, positionMatrix, immediate,
 						//#if MC >= 11904
-						TextRenderer.TextLayerType.SEE_THROUGH,
+						Font.DisplayMode.SEE_THROUGH,
 						//#else
 						//$$ true,
 						//#endif
 						0, 0xF000F0
 				);
-				immediate.draw();
+				immediate.endBatch();
 				//#else
-				//$$ client.textRenderer.draw(texts[i], renderX, renderY, colors[i]);
+				//$$ client.font.draw(texts[i], renderX, renderY, colors[i]);
 				//#endif
 
-				writtenWidth += client.textRenderer.getWidth(texts[i]);
+				writtenWidth += client.font.width(texts[i]);
 			}
 
 			// ========================== Restore Matrix start ==========================
@@ -216,7 +221,7 @@ public class StringDrawer
 			RenderSystem.enableDepthTest();
 			//#endif
 
-			matrixStack.pop();
+			matrixStack.popPose();
 
 			//#elseif MC >= 11500
 			//$$ // if MC >= 11800

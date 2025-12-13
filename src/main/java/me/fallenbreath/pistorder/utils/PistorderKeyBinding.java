@@ -21,28 +21,28 @@
 package me.fallenbreath.pistorder.utils;
 
 import com.google.common.collect.Lists;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
 
 import java.util.List;
 
 public class PistorderKeyBinding
 {
-	public static final KeyBinding CLEAR_DISPLAY_KEY = new KeyBinding(
+	public static final KeyMapping CLEAR_DISPLAY_KEY = new KeyMapping(
 			"pistorder.clear_display",
-			InputUtil.fromTranslationKey("key.keyboard.p").getCode(),
+			InputConstants.getKey("key.keyboard.p").getValue(),
 			//#if MC >= 1.21.9
-			//$$ KeyBinding.Category.MISC
+			//$$ KeyMapping.Category.MISC
 			//#else
 			"key.categories.misc"
 			//#endif
 	);
 
-	public static KeyBinding[] updateVanillaKeyBinding(KeyBinding[] keysAll)
+	public static KeyMapping[] updateVanillaKeyBinding(KeyMapping[] keysAll)
 	{
-		List<KeyBinding> list = Lists.newArrayList(keysAll);
+		List<KeyMapping> list = Lists.newArrayList(keysAll);
 		list.remove(CLEAR_DISPLAY_KEY);
 		list.add(CLEAR_DISPLAY_KEY);
-		return list.toArray(new KeyBinding[0]);
+		return list.toArray(new KeyMapping[0]);
 	}
 }

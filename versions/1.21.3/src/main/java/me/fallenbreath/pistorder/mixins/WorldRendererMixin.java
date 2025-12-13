@@ -21,36 +21,46 @@
 package me.fallenbreath.pistorder.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.fallenbreath.pistorder.impl.Pistorder;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.renderer.LevelRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(WorldRenderer.class)
+@Mixin(LevelRenderer.class)
 public abstract class WorldRendererMixin
 {
 	@Inject(
-			// lambda method in renderLateDebug
-			//#if MC >= 1.21.9
+			// lambda method in addLateDebugPass
+			//#if MC >= 1.21.11
+			//$$ method = "method_75413",
+			//#elseif MC >= 1.21.9
 			//$$ method = "method_72915",
 			//#else
 			method = "method_62212",
 			//#endif
 			at = @At(
+					//#if MC >= 1.21.11
+					//$$ value = "FIELD",
+					//$$ target = "Lnet/minecraft/client/renderer/LevelRenderer;finalizedGizmos:Lnet/minecraft/client/renderer/LevelRenderer$FinalizedGizmos;",
+					//$$ ordinal = 0
+					//#else
+
 					value = "INVOKE",
 					//#if MC >= 1.21.9
-					//$$ target = "Lnet/minecraft/client/render/debug/DebugRenderer;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/Frustum;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;DDDZ)V"
+					//$$ target = "Lnet/minecraft/client/renderer/debug/DebugRenderer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/culling/Frustum;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;DDDZ)V"
 					//#else
-					target = "Lnet/minecraft/client/render/debug/DebugRenderer;renderLate(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;DDD)V"
+					target = "Lnet/minecraft/client/renderer/debug/DebugRenderer;renderAfterTranslucents(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;DDD)V"
+					//#endif
+
 					//#endif
 			)
 	)
 	private void renderPistorder(
 			CallbackInfo ci,
-			@Local MatrixStack matrices
+			@Local PoseStack matrices
 	)
 	{
 		Pistorder.getInstance().render(

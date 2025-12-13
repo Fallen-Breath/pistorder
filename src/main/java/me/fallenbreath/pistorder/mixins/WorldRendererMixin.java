@@ -21,26 +21,26 @@
 package me.fallenbreath.pistorder.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.fallenbreath.pistorder.impl.Pistorder;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.renderer.LevelRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //#if MC >= 12100
-//$$ import net.minecraft.client.render.RenderTickCounter;
+//$$ import net.minecraft.client.DeltaTracker;
 //#endif
 
-@Mixin(WorldRenderer.class)
+@Mixin(LevelRenderer.class)
 public abstract class WorldRendererMixin
 {
 	@Inject(
-			method = "render",
+			method = "renderLevel",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/render/WorldRenderer;renderChunkDebugInfo(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/client/render/Camera;)V"
+					target = "Lnet/minecraft/client/renderer/LevelRenderer;renderDebug(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/Camera;)V"
 			)
 	)
 	private void renderPistorder(
@@ -49,11 +49,11 @@ public abstract class WorldRendererMixin
 					//#if MC < 12005
 					argsOnly = true
 					//#endif
-			) MatrixStack matrices,
+			) PoseStack matrices,
 
 			@Local(argsOnly = true)
 			//#if MC >= 12100
-			//$$ RenderTickCounter tickCounter
+			//$$ DeltaTracker tickCounter
 			//#else
 			float tickDelta
 			//#endif
@@ -62,7 +62,7 @@ public abstract class WorldRendererMixin
 		Pistorder.getInstance().render(
 				matrices,
 				//#if MC >= 12100
-				//$$ tickCounter.getTickDelta(false)
+				//$$ tickCounter.getGameTimeDeltaPartialTick(false)
 				//#else
 				tickDelta
 				//#endif

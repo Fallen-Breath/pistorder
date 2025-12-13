@@ -21,23 +21,23 @@
 package me.fallenbreath.pistorder.impl;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
 import me.fallenbreath.pistorder.utils.PistorderConfigure;
 import me.fallenbreath.pistorder.utils.TemporaryBlockReplacer;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.piston.PistonHandler;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.piston.PistonStructureResolver;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,15 +48,15 @@ public class PistorderDisplay
 {
 	private static final int MAX_PUSH_LIMIT_FOR_CALC = 128;
 
-	private static final String INDICATOR_SUCCESS = Formatting.GREEN + "√";
-	private static final String INDICATOR_FAIL = Formatting.RED + "×";
+	private static final String INDICATOR_SUCCESS = ChatFormatting.GREEN + "√";
+	private static final String INDICATOR_FAIL = ChatFormatting.RED + "×";
 
 	private List<BlockPos> movedBlocks;
 	private List<BlockPos> brokenBlocks;
 	private boolean moveSuccess;
 	private BlockPos immovableBlockPos;
 
-	public final World world;
+	public final Level world;
 	public final BlockPos pistonPos;
 	public final BlockState blockState;
 	public final Direction direction;
@@ -68,7 +68,7 @@ public class PistorderDisplay
 	// used for dynamically_information_update
 	private long lastUpdateTime = -1;
 
-	public PistorderDisplay(World world, BlockPos pistonPos, BlockState blockState, Direction direction, PistonActionType actionType)
+	public PistorderDisplay(Level world, BlockPos pistonPos, BlockState blockState, Direction direction, PistonActionType actionType)
 	{
 		this.world = world;
 		this.pistonPos = pistonPos;
@@ -82,7 +82,7 @@ public class PistorderDisplay
 
 	private Direction getPistonFacing()
 	{
-		return this.blockState.get(Properties.FACING);
+		return this.blockState.getValue(BlockStateProperties.FACING);
 	}
 
 	private boolean isStickyPiston()
@@ -121,7 +121,7 @@ public class PistorderDisplay
 				simulatedPistonPos = this.pistonPos;
 				if (!this.isStickyPiston())
 				{
-					simulatedPistonPos = simulatedPistonPos.offset(this.getPistonFacing());
+					simulatedPistonPos = simulatedPistonPos.relative(this.getPistonFacing());
 				}
 				break;
 			case DISABLED:
@@ -136,9 +136,9 @@ public class PistorderDisplay
 	/**
 	 * Might make the piston blink for a while if the action type is retract
 	 */
-	private void analyze(World world, BlockPos simulatedPistonPos, Direction pistonFacing, PistonActionType PistonActionType)
+	private void analyze(Level world, BlockPos simulatedPistonPos, Direction pistonFacing, PistonActionType PistonActionType)
 	{
-		BlockState air = Blocks.AIR.getDefaultState();
+		BlockState air = Blocks.AIR.defaultBlockState();
 
 		// backing up block states for potential piston (head) block position
 		TemporaryBlockReplacer blockReplacer = new TemporaryBlockReplacer(this.world);
@@ -149,26 +149,26 @@ public class PistorderDisplay
 		}
 		if (PistonActionType.isRetract())
 		{
-			blockReplacer.add(simulatedPistonPos.offset(pistonFacing), air);  // simulated piston head
+			blockReplacer.add(simulatedPistonPos.relative(pistonFacing), air);  // simulated piston head
 		}
 		blockReplacer.removeBlocks();
 
-		PistonHandler pistonHandler = new PistonHandler(world, simulatedPistonPos, pistonFacing, PistonActionType.isPush());
-		this.moveSuccess = pistonHandler.calculatePush();
+		PistonStructureResolver pistonHandler = new PistonStructureResolver(world, simulatedPistonPos, pistonFacing, PistonActionType.isPush());
+		this.moveSuccess = pistonHandler.resolve();
 
 		if (!this.moveSuccess)
 		{
 			int newPushLimit = Math.max(PushLimitManager.getInstance().getPushLimit(), MAX_PUSH_LIMIT_FOR_CALC);
 			PushLimitManager.getInstance().overwritePushLimit(newPushLimit);
-			pistonHandler.calculatePush();
+			pistonHandler.resolve();
 		}
 
 		// restoring things
 		blockReplacer.restoreBlocks();
 		PushLimitManager.getInstance().restorePushLimit();  // it's ok if the push limit hasn't been overwritten
 
-		this.brokenBlocks = Lists.newArrayList(pistonHandler.getBrokenBlocks());
-		this.movedBlocks = Lists.newArrayList(pistonHandler.getMovedBlocks());
+		this.brokenBlocks = Lists.newArrayList(pistonHandler.getToDestroy());
+		this.movedBlocks = Lists.newArrayList(pistonHandler.getToPush());
 		this.immovableBlockPos = ((ImmovableBlockPosRecorder)pistonHandler).getImmovableBlockPos();
 		// reverse the list for the correct order
 		Collections.reverse(this.brokenBlocks);
@@ -177,8 +177,8 @@ public class PistorderDisplay
 
 	private boolean tryIndirectMode()
 	{
-		BlockState blockInFront1 = this.world.getBlockState(this.pistonPos.offset(this.getPistonFacing(), 1));
-		BlockState blockInFront2 = this.world.getBlockState(this.pistonPos.offset(this.getPistonFacing(), 2));
+		BlockState blockInFront1 = this.world.getBlockState(this.pistonPos.relative(this.getPistonFacing(), 1));
+		BlockState blockInFront2 = this.world.getBlockState(this.pistonPos.relative(this.getPistonFacing(), 2));
 		if (blockInFront1.isAir() && !blockInFront2.isAir())
 		{
 			if (this.isStickyPiston())
@@ -210,19 +210,19 @@ public class PistorderDisplay
 		}
 	}
 
-	private static void drawString(MatrixStack matrixStack, BlockPos pos, float tickDelta, float line, String text, int color)
+	private static void drawString(PoseStack matrixStack, BlockPos pos, float tickDelta, float line, String text, int color)
 	{
 		StringDrawer.drawString(matrixStack, pos, tickDelta, line, new String[]{text}, new int[]{color});
 	}
 
-	private boolean checkState(World world)
+	private boolean checkState(Level world)
 	{
 		if (!Objects.equals(world, this.world))
 		{
 			return false;
 		}
-		BlockView chunk = world.getChunkManager().getChunk(this.pistonPos.getX() >> 4, this.pistonPos.getZ() >> 4);
-		if (chunk instanceof WorldChunk && !((WorldChunk)chunk).isEmpty())  // it's really a loaded chunk
+		BlockGetter chunk = world.getChunkSource().getChunkForLighting(this.pistonPos.getX() >> 4, this.pistonPos.getZ() >> 4);
+		if (chunk instanceof LevelChunk && !((LevelChunk)chunk).isEmpty())  // it's really a loaded chunk
 		{
 			return chunk.getBlockState(this.pistonPos).equals(this.blockState);
 		}
@@ -230,12 +230,12 @@ public class PistorderDisplay
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	void render(MatrixStack matrixStack, float tickDelta)
+	void render(PoseStack matrixStack, float tickDelta)
 	{
 		if (!this.isDisabled())
 		{
-			MinecraftClient client = MinecraftClient.getInstance();
-			if (!this.checkState(client.world))
+			Minecraft client = Minecraft.getInstance();
+			if (!this.checkState(client.level))
 			{
 				this.disable();
 				return;
@@ -243,25 +243,25 @@ public class PistorderDisplay
 
 			if (PistorderConfigure.DYNAMICALLY_INFORMATION_UPDATE)
 			{
-				if (this.world.getTime() != this.lastUpdateTime)
+				if (this.world.getGameTime() != this.lastUpdateTime)
 				{
 					this.refreshInformation();
-					this.lastUpdateTime = this.world.getTime();
+					this.lastUpdateTime = this.world.getGameTime();
 				}
 			}
 
 			String actionKey = this.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
 			String actionResult = this.moveSuccess ? INDICATOR_SUCCESS : INDICATOR_FAIL;
-			int goldValue = Formatting.GOLD.getColorValue();
+			int goldValue = ChatFormatting.GOLD.getColor();
 
-			drawString(matrixStack, this.pistonPos, tickDelta, -0.5F, String.format("%s %s", I18n.translate(actionKey), actionResult), goldValue);
+			drawString(matrixStack, this.pistonPos, tickDelta, -0.5F, String.format("%s %s", I18n.get(actionKey), actionResult), goldValue);
 
 			StringDrawer.drawString(
 					matrixStack, this.pistonPos, tickDelta, 0.5F,
 					new String[]{
-							I18n.translate("pistorder.block_count.pre"),
+							I18n.get("pistorder.block_count.pre"),
 							String.valueOf(this.movedBlocks.size()),
-							I18n.translate("pistorder.block_count.post")
+							I18n.get("pistorder.block_count.post")
 					},
 					new int[]{goldValue, this.color, goldValue}
 			);
@@ -272,12 +272,12 @@ public class PistorderDisplay
 			}
 			for (int i = 0; i < this.brokenBlocks.size(); i++)
 			{
-				drawString(matrixStack, this.brokenBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), Formatting.RED.getColorValue());
+				drawString(matrixStack, this.brokenBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), ChatFormatting.RED.getColor());
 			}
 
 			if (this.immovableBlockPos != null)
 			{
-				drawString(matrixStack, this.immovableBlockPos, tickDelta, 0.0F, "×", Formatting.DARK_RED.getColorValue());
+				drawString(matrixStack, this.immovableBlockPos, tickDelta, 0.0F, "×", ChatFormatting.DARK_RED.getColor());
 			}
 		}
 	}

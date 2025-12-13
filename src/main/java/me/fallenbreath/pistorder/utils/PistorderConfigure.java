@@ -21,8 +21,8 @@
 package me.fallenbreath.pistorder.utils;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.InputConstants;
 import me.fallenbreath.pistorder.PistorderMod;
-import net.minecraft.client.util.InputUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,8 +51,8 @@ public class PistorderConfigure
 	{
 		register(
 				"keybinding_clear",
-				v -> PistorderKeyBinding.CLEAR_DISPLAY_KEY.setBoundKey(InputUtil.fromTranslationKey(v)),
-				PistorderKeyBinding.CLEAR_DISPLAY_KEY::getBoundKeyTranslationKey
+				v -> PistorderKeyBinding.CLEAR_DISPLAY_KEY.setKey(InputConstants.getKey(v)),
+				PistorderKeyBinding.CLEAR_DISPLAY_KEY::saveString
 		);
 		register(
 				"swing_hand",

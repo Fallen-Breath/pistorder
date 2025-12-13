@@ -21,9 +21,9 @@
 package me.fallenbreath.pistorder.utils;
 
 import com.google.common.collect.Lists;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
@@ -31,12 +31,12 @@ public class TemporaryBlockReplacer
 {
 	private static final int SET_BLOCK_FLAGS = 16;  // no block/state/listener update
 
-	private final World world;
+	private final Level world;
 	private final List<BlockPos> blockPositions = Lists.newArrayList();
 	private final List<BlockState> targetStates = Lists.newArrayList();
 	private final List<BlockState> originStates = Lists.newArrayList();
 
-	public TemporaryBlockReplacer(World world)
+	public TemporaryBlockReplacer(Level world)
 	{
 		this.world = world;
 	}
@@ -53,7 +53,7 @@ public class TemporaryBlockReplacer
 		this.blockPositions.stream().map(this.world::getBlockState).forEach(this.originStates::add);
 		for (int i = 0; i < this.blockPositions.size(); i++)
 		{
-			this.world.setBlockState(this.blockPositions.get(i), this.targetStates.get(i), SET_BLOCK_FLAGS);
+			this.world.setBlock(this.blockPositions.get(i), this.targetStates.get(i), SET_BLOCK_FLAGS);
 		}
 	}
 
@@ -61,7 +61,7 @@ public class TemporaryBlockReplacer
 	{
 		for (int i = 0; i < this.blockPositions.size(); i++)
 		{
-			this.world.setBlockState(this.blockPositions.get(i), this.originStates.get(i), SET_BLOCK_FLAGS);
+			this.world.setBlock(this.blockPositions.get(i), this.originStates.get(i), SET_BLOCK_FLAGS);
 		}
 	}
 }

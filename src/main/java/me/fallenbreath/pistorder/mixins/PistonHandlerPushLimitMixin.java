@@ -23,17 +23,15 @@ package me.fallenbreath.pistorder.mixins;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.fallenbreath.pistorder.impl.TweakerMoreCompact;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
-import net.minecraft.block.piston.PistonHandler;
+import net.minecraft.world.level.block.piston.PistonStructureResolver;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(PistonHandler.class)
+@Mixin(PistonStructureResolver.class)
 public abstract class PistonHandlerPushLimitMixin
 {
 	@ModifyExpressionValue(
-			method = "tryMove",
+			method = "addBlockLine",
 			at = @At(
 					value = "CONSTANT",
 					args = "intValue=12"

@@ -22,7 +22,7 @@ package me.fallenbreath.pistorder.mixins;
 
 import me.fallenbreath.pistorder.impl.Pistorder;
 import me.fallenbreath.pistorder.utils.FakeMatrixStack;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,10 +33,10 @@ public abstract class WorldRendererMixin
 {
 	// just like onRenderWorldLast in malilib
 	@Inject(
-			method = "renderCenter",
+			method = "render(FJ)V",
 			at = @At(
 					value = "FIELD",
-					target = "Lnet/minecraft/client/render/GameRenderer;renderHand:Z"
+					target = "Lnet/minecraft/client/renderer/GameRenderer;renderHand:Z"
 			)
 	)
 	private void renderPistorder(float tickDelta, long endTime, CallbackInfo ci)
