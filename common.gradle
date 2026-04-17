@@ -45,9 +45,9 @@ dependencies {
 	if (mcVersion >= 12105) {  // "fabric-resource-loader-v0" dependency since fabric api 0.117.0 (25w07a, mc1.21.5 snapshot)
 		fabricApiModules.add("fabric-api-base")
 	}
-    if (mcVersion < 12111) {  // "fabric-resource-loader" is fully moved from v0 to v1 since fabric api 0.139.3 (1.21.11-pre4)
-        fabricApiModules.add("fabric-resource-loader-v0")
-    }
+	if (mcVersion < 12111) {  // "fabric-resource-loader" is fully moved from v0 to v1 since fabric api 0.139.3 (1.21.11-pre4)
+		fabricApiModules.add("fabric-resource-loader-v0")
+	}
 	if (mcVersion >= 12109) {  // "fabric-resource-loader-v0" dependency since fabric api 0.133.11 (1.21.9-rc1)
 		fabricApiModules.add("fabric-resource-loader-v1")
 	}
@@ -75,7 +75,7 @@ if (mcVersion >= 12005) {
 JavaVersion MIXIN_COMPATIBILITY_LEVEL = JAVA_COMPATIBILITY
 
 loom {
-    def commonVmArgs = ['-Dmixin.debug.export=true', '-Dmixin.debug.countInjections=true']
+	def commonVmArgs = ['-Dmixin.debug.export=true', '-Dmixin.debug.countInjections=true']
 	runConfigs.client {
 		// to make sure it generates all "Minecraft Client (:subproject_name)" applications
 		ideConfigGenerated = true
@@ -83,7 +83,7 @@ loom {
 		vmArgs commonVmArgs
 	}
 	runs {
-        def auditVmArgs = [*commonVmArgs, '-DmixinAuditor.audit=true']
+		def auditVmArgs = [*commonVmArgs, '-DmixinAuditor.audit=true']
 		clientMixinAudit {
 			client()
 			vmArgs auditVmArgs
