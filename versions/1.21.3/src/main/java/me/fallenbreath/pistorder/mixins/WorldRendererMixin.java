@@ -34,7 +34,9 @@ public abstract class WorldRendererMixin
 {
 	@Inject(
 			// lambda method in addLateDebugPass
-			//#if MC >= 1.21.11
+			//#if MC >= 26.1
+			//$$ method = "lambda$addLateDebugPass$0",
+			//#elseif MC >= 1.21.11
 			//$$ method = "method_75413",
 			//#elseif MC >= 1.21.9
 			//$$ method = "method_72915",
