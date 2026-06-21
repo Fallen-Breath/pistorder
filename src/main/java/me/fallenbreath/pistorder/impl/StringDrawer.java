@@ -34,11 +34,14 @@ import net.minecraft.core.BlockPos;
 //$$ import com.mojang.blaze3d.opengl.GlStateManager;
 //#endif
 
+//#if 11500 <= MC && MC < 26.2
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.client.renderer.MultiBufferSource;
+//#endif
+
 //#if MC >= 11500
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
 import org.joml.Matrix4f;
 //#if MC < 11904
 //$$ import com.mojang.math.Transformation;
@@ -54,7 +57,7 @@ public class StringDrawer
 	private static final double MAX_RENDER_DISTANCE = 256.0D;
 	private static final float FONT_SIZE = 0.025F;
 
-	//#if MC >= 11500
+	//#if 11500 <= MC && MC < 26.2
 	private static MultiBufferSource.BufferSource getVertexConsumer()
 	{
 		//#if MC >= 12100
@@ -166,6 +169,44 @@ public class StringDrawer
 			}
 
 			float writtenWidth = 0.0F;
+
+			//#if MC >= 26.2
+			//$$ BatchedTextDrawer drawer = BatchedTextDrawer.getActive();
+			//$$ boolean shouldCloseDrawer = drawer == null;
+			//$$ if (shouldCloseDrawer)
+			//$$ {
+			//$$ 	drawer = new BatchedTextDrawer();
+			//$$ }
+			//$$ try
+			//$$ {
+			//$$ 	for (int i = 0; i < texts.length; i++)
+			//$$ 	{
+			//$$ 		float renderX = -totalWidth * 0.5F + writtenWidth;
+			//$$ 		float renderY = client.font.wordWrapHeight(FormattedText.of(texts[i]),Integer.MAX_VALUE) * (-0.5F + 1.25F * line);
+			//$$
+			//$$ 		drawer.append(
+			//$$ 				matrixStack.last().pose(), Font.DisplayMode.SEE_THROUGH, 0xF000F0,
+			//$$ 				client.font.prepareText(
+			//$$ 						texts[i], renderX, renderY, colors[i] | (0xFF << 24),
+			//$$ 						false, 0
+			//$$ 				)
+			//$$ 		);
+			//$$
+			//$$ 		writtenWidth += client.font.width(texts[i]);
+			//$$ 	}
+			//$$ 	if (shouldCloseDrawer)
+			//$$ 	{
+			//$$ 		drawer.draw();
+			//$$ 	}
+			//$$ }
+			//$$ finally
+			//$$ {
+			//$$ 	if (shouldCloseDrawer)
+			//$$ 	{
+			//$$ 		drawer.close();
+			//$$ 	}
+			//$$ }
+			//#else
 			for (int i = 0; i < texts.length; i++)
 			{
 				float renderX = -totalWidth * 0.5F + writtenWidth;
@@ -206,6 +247,7 @@ public class StringDrawer
 
 				writtenWidth += client.font.width(texts[i]);
 			}
+			//#endif  // if MC >= 26.2
 
 			// ========================== Restore Matrix start ==========================
 

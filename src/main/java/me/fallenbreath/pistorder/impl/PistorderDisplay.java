@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.fallenbreath.pistorder.mixins.PistonBlockAccessor;
 import me.fallenbreath.pistorder.pushlimit.PushLimitManager;
+import me.fallenbreath.pistorder.utils.ColorUtils;
 import me.fallenbreath.pistorder.utils.PistorderConfigure;
 import me.fallenbreath.pistorder.utils.TemporaryBlockReplacer;
 import net.minecraft.ChatFormatting;
@@ -252,7 +253,7 @@ public class PistorderDisplay
 
 			String actionKey = this.actionType.isPush() ? "pistorder.push" : "pistorder.retract";
 			String actionResult = this.moveSuccess ? INDICATOR_SUCCESS : INDICATOR_FAIL;
-			int goldValue = ChatFormatting.GOLD.getColor();
+			int goldValue = ColorUtils.getGoldColor();
 
 			drawString(matrixStack, this.pistonPos, tickDelta, -0.5F, String.format("%s %s", I18n.get(actionKey), actionResult), goldValue);
 
@@ -272,12 +273,12 @@ public class PistorderDisplay
 			}
 			for (int i = 0; i < this.brokenBlocks.size(); i++)
 			{
-				drawString(matrixStack, this.brokenBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), ChatFormatting.RED.getColor());
+				drawString(matrixStack, this.brokenBlocks.get(i), tickDelta, 0.0F, String.valueOf(i + 1), ColorUtils.getRedColor());
 			}
 
 			if (this.immovableBlockPos != null)
 			{
-				drawString(matrixStack, this.immovableBlockPos, tickDelta, 0.0F, "×", ChatFormatting.DARK_RED.getColor());
+				drawString(matrixStack, this.immovableBlockPos, tickDelta, 0.0F, "×", ColorUtils.getDarkRedColor());
 			}
 		}
 	}

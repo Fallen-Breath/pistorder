@@ -148,7 +148,11 @@ public class Pistorder
 	{
 		if (PistorderKeyBinding.CLEAR_DISPLAY_KEY.consumeClick())
 		{
+			//#if MC >= 26.2
+			//$$ Minecraft.getInstance().gui.hud.setOverlayMessage(
+			//#else
 			Minecraft.getInstance().gui.setOverlayMessage(
+			//#endif
 					//#if MC >= 11904
 					Component.translatable(
 					//#else
